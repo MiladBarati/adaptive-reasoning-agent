@@ -1,0 +1,178 @@
+Example Queries for Testing Corrective & Adaptive RAG Agent
+
+This file contains example queries to demonstrate the corrective and adaptive capabilities of the RAG system.
+
+===== BASIC QUERIES =====
+
+1. "What is machine learning?"
+   Expected: Definition and overview from machine_learning.txt
+   Tests: Basic retrieval and generation
+
+2. "Explain deep learning"
+   Expected: Information about neural networks and deep learning architectures
+   Tests: Basic semantic understanding
+
+3. "What are vector databases used for?"
+   Expected: Use cases and applications of vector databases
+   Tests: Document retrieval and relevance grading
+
+===== QUERIES TESTING QUERY REWRITING =====
+
+4. "How do computers learn from data?"
+   Original query may be vague
+   Expected: System rewrites to focus on machine learning algorithms and training
+   Tests: Query rewriting improves retrieval
+
+5. "What's the deal with those neural network things?"
+   Colloquial and vague query
+   Expected: Rewritten to more formal query about neural networks
+   Tests: Query normalization and improvement
+
+6. "AI that learns by itself"
+   Ambiguous reference
+   Expected: Rewritten to query about unsupervised learning or reinforcement learning
+   Tests: Query expansion and clarification
+
+===== QUERIES TESTING RELEVANCE GRADING =====
+
+7. "What is GPT-4?"
+   Should retrieve information about transformers and language models
+   Expected: System grades documents for relevance to GPT-4
+   Tests: Relevance grading filters irrelevant documents
+
+8. "How does BERT work?"
+   Should find information about BERT specifically in NLP context
+   Expected: Grading identifies NLP/transformer content as relevant
+   Tests: Specific entity recognition in grading
+
+9. "What are convolutional neural networks?"
+   Should retrieve CNN information from deep learning document
+   Expected: CNN sections graded as highly relevant
+   Tests: Section-level relevance assessment
+
+===== QUERIES TESTING WEB SEARCH FALLBACK =====
+
+10. "Who won the Nobel Prize in Physics in 2024?"
+    Not in local documents
+    Expected: System detects no relevant local docs, triggers web search
+    Tests: Web search fallback when local knowledge insufficient
+
+11. "What is the current price of Bitcoin?"
+    Real-time information not in documents
+    Expected: Web search provides current information
+    Tests: Handling of temporal/real-time queries
+
+12. "What happened in the latest SpaceX launch?"
+    Recent events not in static documents
+    Expected: Fallback to web search for current events
+    Tests: Adaptive retrieval strategy
+
+===== QUERIES TESTING HALLUCINATION DETECTION =====
+
+13. "What is the relationship between CNNs and sentiment analysis?"
+    CNNs are for images, sentiment analysis is NLP
+    Expected: System should recognize if it tries to incorrectly connect them
+    Tests: Detecting factual inconsistencies
+
+14. "How many layers does ResNet have?"
+    Specific numerical fact
+    Expected: Should only answer if explicitly stated in documents
+    Tests: Preventing specific factual hallucinations
+
+15. "What is the accuracy of BERT on all NLP tasks?"
+    Documents don't contain comprehensive accuracy metrics
+    Expected: Should acknowledge limitation or indicate uncertainty
+    Tests: Handling missing information appropriately
+
+===== QUERIES TESTING ITERATIVE REFINEMENT =====
+
+16. "Compare supervised and unsupervised learning"
+    Requires synthesizing information from multiple sections
+    Expected: May need multiple iterations to gather complete information
+    Tests: Multi-pass retrieval and generation
+
+17. "What are the main challenges in deep learning and how can RAG help with them?"
+    Complex multi-part question spanning multiple documents
+    Expected: System may iterate to ensure all parts addressed
+    Tests: Answer completeness verification
+
+18. "Explain the complete machine learning pipeline from data collection to deployment"
+    Comprehensive topic requiring detailed answer
+    Expected: Multiple iterations to ensure thorough coverage
+    Tests: Completeness checking and iterative improvement
+
+===== QUERIES TESTING DOMAIN KNOWLEDGE =====
+
+19. "What is the difference between RNNs and Transformers?"
+    Both mentioned in documents
+    Expected: Comparative analysis based on retrieved information
+    Tests: Multi-document synthesis
+
+20. "What preprocessing steps are needed for NLP?"
+    Specific information in NLP document
+    Expected: Accurate extraction of preprocessing steps
+    Tests: List extraction and formatting
+
+21. "What are the applications of machine learning in healthcare?"
+    Specific section in machine learning document
+    Expected: Targeted retrieval of healthcare applications
+    Tests: Topic-specific retrieval
+
+===== QUERIES TESTING EDGE CASES =====
+
+22. "Tell me everything about AI"
+    Overly broad query
+    Expected: System should rewrite to more specific query or provide structured overview
+    Tests: Handling overly general queries
+
+23. "quantum entanglement in machine learning"
+    Topic not well covered in documents
+    Expected: System should indicate limited information or use web search
+    Tests: Handling out-of-domain queries
+
+24. "asdfghjkl"
+    Nonsense query
+    Expected: System should handle gracefully, possibly ask for clarification
+    Tests: Error handling and robustness
+
+===== QUERIES TESTING MULTI-STEP REASONING =====
+
+25. "If I want to build a chatbot, what NLP techniques and deep learning architectures should I use?"
+    Requires connecting multiple concepts
+    Expected: Synthesizes information from NLP and deep learning documents
+    Tests: Cross-document reasoning
+
+26. "How would vector databases improve a RAG system?"
+    Requires understanding both concepts
+    Expected: Connects vector database capabilities to RAG requirements
+    Tests: Conceptual connection and reasoning
+
+27. "What makes transformer models better than RNNs for NLP?"
+    Comparative analysis question
+    Expected: Identifies strengths of transformers vs limitations of RNNs
+    Tests: Comparative reasoning from multiple sources
+
+===== USAGE INSTRUCTIONS =====
+
+To test the system:
+
+1. Start with basic queries (1-3) to verify system is working
+2. Try query rewriting tests (4-6) to see how queries are reformulated
+3. Test relevance grading (7-9) to see document filtering in action
+4. Try web search queries (10-12) to test fallback mechanism
+5. Use hallucination tests (13-15) to verify factual grounding
+6. Test iterative refinement (16-18) to see multi-pass correction
+7. Try domain knowledge queries (19-21) for normal operation
+8. Test edge cases (22-24) for robustness
+9. Try multi-step reasoning (25-27) for complex synthesis
+
+Monitor the workflow steps in the UI to see:
+- How queries are rewritten
+- How many documents are retrieved and graded
+- Whether web search is triggered
+- How many iterations are performed
+- Hallucination check results
+- Answer verification results
+
+This demonstrates the corrective and adaptive nature of the RAG system!
+
