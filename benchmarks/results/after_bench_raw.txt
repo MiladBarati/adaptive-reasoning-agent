@@ -1,0 +1,11 @@
+Starting benchmark: 20 requests to /query...
+
+========================================
+      BENCHMARK RESULTS
+========================================
+Total Requests: 20
+Total Duration: 4.20s
+Requests/sec:   4.76
+--------------------
+HTTP 500 (ERROR): 20
+========================================

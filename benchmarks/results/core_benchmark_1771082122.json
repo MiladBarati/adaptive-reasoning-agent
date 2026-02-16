@@ -1,0 +1,236 @@
+[
+  {
+    "id": 1,
+    "question": "What is machine learning?",
+    "expected_topics": [
+      "algorithms",
+      "data",
+      "training",
+      "predictions"
+    ],
+    "difficulty": "easy",
+    "system": "No RAG",
+    "answer": "Machine learning is a subset of artificial intelligence (AI) that focuses on the development of algorithms and statistical models that enable computer systems to improve their performance in specific tasks through experience, without being explicitly programmed.\n\nIn simpler terms, it's about teaching computers how to learn from data. Machine learning algorithms can analyze patterns within large datasets and use these insights to make predictions or decisions. The key aspect is that the machine learns by itself, improving its accuracy over time as it processes more data.\n\nMachine learning encompasses several techniques such as supervised learning (where a model is trained on labeled data), unsupervised learning (for discovering hidden patterns in unlabeled data), and reinforcement learning (where an agent learns to make decisions through trial and error).\n\nIt's widely used in various applications, including image recognition, natural language processing, recommendation systems, fraud detection, autonomous vehicles, and many more.",
+    "latency": 9.366038200008916,
+    "context": "",
+    "relevance": 1,
+    "groundedness": -1
+  },
+  {
+    "id": 1,
+    "question": "What is machine learning?",
+    "expected_topics": [
+      "algorithms",
+      "data",
+      "training",
+      "predictions"
+    ],
+    "difficulty": "easy",
+    "system": "Regular RAG",
+    "answer": "Machine learning is a subset of artificial intelligence (AI) that focuses on building systems capable of learning from and making decisions based on data. Unlike traditional programming where tasks are explicitly coded, machine learning algorithms use statistical techniques to enable computers to \"learn\" from data and improve their performance over time without being directly programmed for each task.",
+    "latency": 2.7269517999957316,
+    "context": "Machine Learning: A Comprehensive Overview\n\nMachine Learning (ML) is a subset of artificial intelligence (AI) that focuses on building systems that can learn from and make decisions based on data. Rather than being explicitly programmed to perform a task, machine learning algorithms use statistical techniques to enable computers to \"learn\" from data and improve their performance over time.\n\nCore Concepts\n\nThere are three main types of machine learning:\n\n1. Supervised Learning: In supervised learning, algorithms learn from labeled training data. The algorithm learns to map inputs to outputs based on example input-output pairs. Common applications include classification (categorizing data into predefined classes) and regression (predicting continuous values).\n\nMachine Learning: A Comprehensive Overview\n\nMachine Learning (ML) is a subset of artificial intelligence (AI) that focuses on building systems that can learn from and make decisions based on data. Rather than being explicitly programmed to perform a task, machine learning algorithms use statistical techniques to enable computers to \"learn\" from data and improve their performance over time.\n\nCore Concepts\n\nThere are three main types of machine learning:\n\n1. Supervised Learning: In supervised learning, algorithms learn from labeled training data. The algorithm learns to map inputs to outputs based on example input-output pairs. Common applications include classification (categorizing data into predefined classes) and regression (predicting continuous values).\n\nApplications of Machine Learning\n\nMachine learning has revolutionized numerous fields:\n\n1. Healthcare: Disease prediction, medical image analysis, drug discovery, and personalized treatment recommendations\n2. Finance: Fraud detection, algorithmic trading, credit scoring, and risk assessment\n3. E-commerce: Product recommendations, demand forecasting, and customer segmentation\n4. Natural Language Processing: Sentiment analysis, machine translation, chatbots, and text summarization\n5. Computer Vision: Image recognition, object detection, facial recognition, and autonomous vehicles\n6. Manufacturing: Predictive maintenance, quality control, and process optimization\n\nThe Machine Learning Pipeline\n\nA typical machine learning project follows these steps:\n\nApplications of Machine Learning\n\nMachine learning has revolutionized numerous fields:\n\n1. Healthcare: Disease prediction, medical image analysis, drug discovery, and personalized treatment recommendations\n2. Finance: Fraud detection, algorithmic trading, credit scoring, and risk assessment\n3. E-commerce: Product recommendations, demand forecasting, and customer segmentation\n4. Natural Language Processing: Sentiment analysis, machine translation, chatbots, and text summarization\n5. Computer Vision: Image recognition, object detection, facial recognition, and autonomous vehicles\n6. Manufacturing: Predictive maintenance, quality control, and process optimization\n\nThe Machine Learning Pipeline\n\nA typical machine learning project follows these steps:",
+    "relevance": 1,
+    "groundedness": 1
+  },
+  {
+    "id": 1,
+    "question": "What is machine learning?",
+    "expected_topics": [
+      "algorithms",
+      "data",
+      "training",
+      "predictions"
+    ],
+    "difficulty": "easy",
+    "system": "Corrective RAG",
+    "answer": "Machine learning is a subset of artificial intelligence that enables systems to improve their performance at tasks through experience without being explicitly programmed. It uses statistical techniques to learn from data. There are three main types: supervised, unsupervised, and reinforcement learning.",
+    "latency": 7.427547200000845,
+    "context": "",
+    "relevance": 1,
+    "groundedness": -1
+  },
+  {
+    "id": 2,
+    "question": "How does a Vector Database work?",
+    "expected_topics": [
+      "embeddings",
+      "similarity search",
+      "high-dimensional vectors"
+    ],
+    "difficulty": "medium",
+    "system": "No RAG",
+    "answer": "A vector database is designed to store and efficiently retrieve high-dimensional vectors, which are used for similarity search in large datasets. Here's an overview of how they typically work:\n\n### 1. **Data Storage**\n   - **Vector Representation**: Vectors can represent various types of data such as text (using word embeddings), images (using feature vectors extracted from convolutional neural networks), and even audio or video content.\n   - **Storage Format**: Vector databases often use specialized storage formats optimized for vector similarity search, such as B-trees, R-trees, or KD-trees. These structures help in organizing the data efficiently.\n\n### 2. **Indexing**\n   - **Vector Indexing Techniques**:\n     - **Hierarchical Navigable Small World (HNSW)**: A graph-based indexing technique that allows for efficient nearest neighbor search.\n     - **Bitap Index**: Uses bit vectors to represent and index vectors, which can be very space-efficient but may not scale as well with the dimensionality of the vectors.\n     - **LSI (Latent Semantic Indexing) or SVD (Singular Value Decomposition)**: These techniques transform high-dimensional vector spaces into lower dimensions while preserving semantic relationships between items.\n\n### 3. **Similarity Search**\n   - **Nearest Neighbor Search**: The core functionality of a vector database is to find the most similar vectors in a large dataset given an input query vector.\n   - **Approximate Nearest Neighbor (ANN)**: Techniques like Locality-Sensitive Hashing (LSH) or Approximate Nearest Neighbor (ANN) algorithms are used for efficient search, especially when dealing with high-dimensional data.\n\n### 4. **Scalability and Performance**\n   - **Distributed Architecture**: Many vector databases use distributed architectures to scale horizontally across multiple servers.\n   - **Load Balancing**: Efficient load balancing strategies ensure that the database can handle large volumes of queries without performance degradation.\n   - **Caching Mechanisms**: Caches are used to store frequently accessed vectors, reducing the need for repeated expensive searches.\n\n### 5. **Query Processing**\n   - **Vector Similarity Measures**: Common similarity measures include cosine similarity, Euclidean distance, and Jaccard index, depending on the application requirements.\n   - **Scoring and Ranking**: Results can be scored based on their similarity to the query vector and ranked accordingly for better user experience.\n\n### 6. **Advanced Features**\n   - **Anomaly Detection**: Some vector databases include features for detecting anomalies or outliers in the data.\n   - **Data Integrity Checks**: Ensuring that vectors are correctly stored and updated, especially important when dealing with large datasets.\n   - **Security Measures**: Protecting sensitive information through encryption and access controls.\n\n### 7. **Integration and APIs**\n   - **APIs and SDKs**: Vector databases often provide RESTful APIs or SDKs for integration into applications, allowing developers to easily incorporate vector similarity search capabilities.\n\nIn summary, a vector database works by efficiently storing high-dimensional vectors, indexing them appropriately, and providing fast similarity searches using advanced algorithms. These features make it suitable for various applications such as recommendation systems, content-based image retrieval, and more.",
+    "latency": 15.682650499991723,
+    "context": "",
+    "relevance": 1,
+    "groundedness": -1
+  },
+  {
+    "id": 2,
+    "question": "How does a Vector Database work?",
+    "expected_topics": [
+      "embeddings",
+      "similarity search",
+      "high-dimensional vectors"
+    ],
+    "difficulty": "medium",
+    "system": "Regular RAG",
+    "answer": "A vector database works by storing and efficiently managing high-dimensional vector embeddings of data. These databases are designed to handle the storage, indexing, and querying of these embeddings in an optimized manner.\n\nHere's how it generally operates:\n\n1. **Data Storage**: The vector database stores the vector embeddings for various pieces of data (such as text documents, images, or audio files). Each piece of data is represented by a high-dimensional vector that captures its characteristics and context.\n\n2. **Indexing**: To enable fast querying based on these vectors, the vector database creates an index structure. This index allows it to quickly find embeddings that are close to a given query vector, which represents what the user or system is looking for.\n\n3. **Query Processing**: When a query (a vector representing the desired data) is made, the vector database uses its indexing mechanism to locate relevant vectors in the stored dataset. It then retrieves and returns these vectors along with their associated original data items.\n\n4. **Distance Metrics**: The process of finding similar embeddings often involves calculating distances between the query vector and all stored vectors using distance metrics such as cosine similarity, Euclidean distance, or dot product. These metrics help determine how close two vectors are to each other in the high-dimensional space.\n\n5. **Scalability and Performance Optimization**: As datasets grow larger and embedding models improve, vector databases need to be able to handle increased scale efficiently while maintaining accuracy. This involves optimizing storage, indexing strategies, query processing algorithms, and possibly using distributed computing techniques for scalability.\n\nIn summary, a vector database works by leveraging the power of high-dimensional vector embeddings to provide efficient and accurate semantic similarity search capabilities across large datasets.",
+    "latency": 8.976242600008845,
+    "context": "Vector databases have become critical infrastructure for AI applications, enabling semantic understanding at scale. As embedding models improve and datasets grow, vector databases will continue to evolve to meet increasing demands for speed, scale, and accuracy.\n\nVector databases have become critical infrastructure for AI applications, enabling semantic understanding at scale. As embedding models improve and datasets grow, vector databases will continue to evolve to meet increasing demands for speed, scale, and accuracy.\n\nVector Databases: Foundations of Semantic Search\n\nVector databases are specialized databases designed to store, index, and query high-dimensional vector embeddings efficiently. They have become essential infrastructure for modern AI applications, particularly in retrieval-augmented generation (RAG), recommendation systems, and semantic search.\n\nUnderstanding Vector Embeddings\n\nWhat are Embeddings?\nVector embeddings are dense numerical representations of data (text, images, audio) in high-dimensional space. Similar items have embeddings that are close together in this space, enabling semantic similarity search.\n\nProperties of Good Embeddings:\n- Semantic Similarity: Similar meanings are represented by nearby vectors\n- Dimensionality: Typically 384-4096 dimensions\n- Distance Metrics: Cosine similarity, Euclidean distance, dot product\n- Consistency: Similar items consistently map to similar vectors\n\nVector Databases: Foundations of Semantic Search\n\nVector databases are specialized databases designed to store, index, and query high-dimensional vector embeddings efficiently. They have become essential infrastructure for modern AI applications, particularly in retrieval-augmented generation (RAG), recommendation systems, and semantic search.\n\nUnderstanding Vector Embeddings\n\nWhat are Embeddings?\nVector embeddings are dense numerical representations of data (text, images, audio) in high-dimensional space. Similar items have embeddings that are close together in this space, enabling semantic similarity search.\n\nProperties of Good Embeddings:\n- Semantic Similarity: Similar meanings are represented by nearby vectors\n- Dimensionality: Typically 384-4096 dimensions\n- Distance Metrics: Cosine similarity, Euclidean distance, dot product\n- Consistency: Similar items consistently map to similar vectors",
+    "relevance": 6,
+    "groundedness": 1
+  },
+  {
+    "id": 2,
+    "question": "How does a Vector Database work?",
+    "expected_topics": [
+      "embeddings",
+      "similarity search",
+      "high-dimensional vectors"
+    ],
+    "difficulty": "medium",
+    "system": "Corrective RAG",
+    "answer": "Vector databases store and index high-dimensional vector embeddings to enable efficient semantic search. They use specialized indexing methods like HNSW, IVF, Product Quantization, and LSH for fast approximate similarity searches. These databases are crucial in AI applications such as RAG and recommendation systems.",
+    "latency": 25.676002699998207,
+    "context": "",
+    "relevance": 1,
+    "groundedness": -1
+  },
+  {
+    "id": 3,
+    "question": "Explain the difference between supervised and unsupervised learning.",
+    "expected_topics": [
+      "labeled data",
+      "unlabeled data",
+      "clustering",
+      "classification"
+    ],
+    "difficulty": "medium",
+    "system": "No RAG",
+    "answer": "Supervised and unsupervised learning are two fundamental paradigms in machine learning that differ in their approach to training models and how they utilize data.\n\n### Supervised Learning\n\nIn supervised learning, the model is trained using a dataset that includes both input features and corresponding output labels (or targets). The goal of supervised learning is to learn a mapping function from inputs to outputs such that future unseen inputs can be predicted accurately. Here are some key points about supervised learning:\n\n1. **Training Data**: Supervised learning algorithms use labeled data, meaning each example in the dataset has both input features and an associated output label.\n2. **Types of Tasks**:\n   - Classification: Predicting a discrete class label (e.g., spam/not-spam email detection).\n   - Regression: Predicting a continuous value (e.g., predicting house prices based on features like size, location, etc.).\n3. **Model Evaluation**: The performance of the model is typically evaluated using metrics such as accuracy, precision, recall, F1 score, or mean squared error.\n4. **Types of Algorithms**:\n   - Linear Regression\n   - Logistic Regression\n   - Decision Trees\n   - Random Forests\n   - Support Vector Machines (SVM)\n   - Neural Networks\n\n### Unsupervised Learning\n\nIn contrast to supervised learning, unsupervised learning involves training models on unlabeled data. The goal is to find patterns or structure within the input features without any corresponding output labels. Here are some key points about unsupervised learning:\n\n1. **Training Data**: In unsupervised learning, there are no labeled outputs; instead, the model must infer relationships and structures from the data itself.\n2. **Types of Tasks**:\n   - Clustering: Grouping similar instances together (e.g., customer segmentation).\n   - Association Rule Learning: Discovering rules that describe large portions of your data (e.g., frequent itemsets in market basket analysis).\n   - Dimensionality Reduction: Reducing the number of random variables under consideration by obtaining a set of principal variables.\n3. **Model Evaluation**: Evaluating unsupervised models can be more challenging because there are no ground truth labels to compare against, so metrics like silhouette score or Davies-Bouldin index might be used.\n4. **Types of Algorithms**:\n   - K-Means Clustering\n   - Hierarchical Clustering\n   - Principal Component Analysis (PCA)\n   - t-Distributed Stochastic Neighbor Embedding (t-SNE)\n\n### Summary\n\n- **Supervised Learning**: Uses labeled data to learn a function that maps inputs to outputs. Common tasks include classification and regression.\n- **Unsupervised Learning**: Works with unlabeled data to find patterns, structures, or groupings within the input features.\n\nBoth approaches are crucial in different scenarios depending on whether you have access to labeled data (as is often the case) or not (which might be more common).",
+    "latency": 14.931451299999026,
+    "context": "",
+    "relevance": 1,
+    "groundedness": -1
+  },
+  {
+    "id": 3,
+    "question": "Explain the difference between supervised and unsupervised learning.",
+    "expected_topics": [
+      "labeled data",
+      "unlabeled data",
+      "clustering",
+      "classification"
+    ],
+    "difficulty": "medium",
+    "system": "Regular RAG",
+    "answer": "Supervised and unsupervised learning are two fundamental paradigms in machine learning, each with distinct approaches to training models and making predictions.\n\n**Supervised Learning** involves training a model using labeled data. In this context, \"labeled\" means that the input data is accompanied by an output variable or target value for which the algorithm aims to predict. The goal of supervised learning algorithms is to learn from these examples so they can make accurate predictions on new, unseen data.\n\nKey characteristics and applications of supervised learning include:\n- **Training Data**: Requires labeled training data.\n- **Tasks**: Common tasks include regression (predicting continuous values) and classification (predicting discrete categories).\n- **Examples**:\n  - Linear Regression: Predicts a continuous value based on input features.\n  - Logistic Regression: Used for binary classification problems, such as predicting whether an email is spam or not.\n  - Decision Trees: Can be used for both regression and classification tasks.\n  - Random Forests: An ensemble method that combines multiple decision trees to improve accuracy and reduce overfitting.\n  - Support Vector Machines (SVM): Useful in high-dimensional spaces for separating classes with a hyperplane.\n  - Neural Networks: Capable of learning complex patterns, often used in image recognition or natural language processing.\n\n**Unsupervised Learning**, on the other hand, involves training models using unlabeled data. The algorithm tries to find hidden patterns or structures within the input data without any predefined output values. Unsupervised learning is particularly useful when dealing with large datasets where labeling all instances is impractical or impossible.\n\nKey characteristics and applications of unsupervised learning include:\n- **Training Data**: Uses only unlabeled data.\n- **Tasks**: Common tasks include clustering (grouping similar items together) and dimensionality reduction (reducing the number of variables under consideration).\n- **Examples**:\n  - K-Means Clustering: Groups data points into clusters based on similarity.\n  - Hierarchical Clustering: Creates a tree-like structure to represent relationships between different groups or clusters.\n  - Principal Component Analysis (PCA): Reduces the dimensionality of the input space while preserving as much variance in the data as possible.\n  - Autoencoders: Neural networks designed for unsupervised feature learning, often used for tasks like anomaly detection and image compression.\n\nIn summary, supervised learning relies on labeled data to learn a mapping from inputs to outputs, whereas unsupervised learning uses unlabeled data to discover patterns or structures within the input space.",
+    "latency": 13.014902599999914,
+    "context": "2. Unsupervised Learning: Unsupervised learning works with unlabeled data, where the algorithm tries to find hidden patterns or structures in the input data. Clustering and dimensionality reduction are common unsupervised learning tasks.\n\n3. Reinforcement Learning: In reinforcement learning, an agent learns to make decisions by interacting with an environment. The agent receives rewards or penalties based on its actions and learns to maximize cumulative rewards over time.\n\nKey Machine Learning Algorithms\n\n2. Unsupervised Learning: Unsupervised learning works with unlabeled data, where the algorithm tries to find hidden patterns or structures in the input data. Clustering and dimensionality reduction are common unsupervised learning tasks.\n\n3. Reinforcement Learning: In reinforcement learning, an agent learns to make decisions by interacting with an environment. The agent receives rewards or penalties based on its actions and learns to maximize cumulative rewards over time.\n\nKey Machine Learning Algorithms\n\nKey Machine Learning Algorithms\n\nPopular supervised learning algorithms include:\n- Linear Regression: Predicts continuous values by finding the best-fitting line through data points\n- Logistic Regression: Used for binary classification problems\n- Decision Trees: Tree-like models for classification and regression\n- Random Forests: Ensemble method that combines multiple decision trees\n- Support Vector Machines (SVM): Finds optimal hyperplanes to separate classes\n- Neural Networks: Inspired by biological neural networks, capable of learning complex patterns\n\nUnsupervised learning algorithms include:\n- K-Means Clustering: Groups data points into K clusters based on similarity\n- Hierarchical Clustering: Creates a tree of clusters\n- Principal Component Analysis (PCA): Reduces dimensionality while preserving variance\n- Autoencoders: Neural networks for unsupervised feature learning\n\nApplications of Machine Learning\n\nMachine learning has revolutionized numerous fields:\n\nKey Machine Learning Algorithms\n\nPopular supervised learning algorithms include:\n- Linear Regression: Predicts continuous values by finding the best-fitting line through data points\n- Logistic Regression: Used for binary classification problems\n- Decision Trees: Tree-like models for classification and regression\n- Random Forests: Ensemble method that combines multiple decision trees\n- Support Vector Machines (SVM): Finds optimal hyperplanes to separate classes\n- Neural Networks: Inspired by biological neural networks, capable of learning complex patterns\n\nUnsupervised learning algorithms include:\n- K-Means Clustering: Groups data points into K clusters based on similarity\n- Hierarchical Clustering: Creates a tree of clusters\n- Principal Component Analysis (PCA): Reduces dimensionality while preserving variance\n- Autoencoders: Neural networks for unsupervised feature learning\n\nApplications of Machine Learning\n\nMachine learning has revolutionized numerous fields:",
+    "relevance": 1,
+    "groundedness": 0
+  },
+  {
+    "id": 3,
+    "question": "Explain the difference between supervised and unsupervised learning.",
+    "expected_topics": [
+      "labeled data",
+      "unlabeled data",
+      "clustering",
+      "classification"
+    ],
+    "difficulty": "medium",
+    "system": "Corrective RAG",
+    "answer": "Supervised learning uses labeled data to predict outcomes, whereas unsupervised learning works with unlabeled data to discover patterns and structures. The key difference lies in whether the training data includes correct answers (labels) for guidance. Supervised learning aims at precise prediction tasks, while unsupervised learning focuses on understanding hidden patterns in data.",
+    "latency": 6.053289000003133,
+    "context": "",
+    "relevance": 1,
+    "groundedness": -1
+  },
+  {
+    "id": 4,
+    "question": "What is the capital of France?",
+    "expected_topics": [
+      "Paris"
+    ],
+    "difficulty": "easy_external_knowledge",
+    "system": "No RAG",
+    "answer": "The capital of France is Paris.",
+    "latency": 0.5702041000040481,
+    "context": "",
+    "relevance": 1,
+    "groundedness": -1
+  },
+  {
+    "id": 4,
+    "question": "What is the capital of France?",
+    "expected_topics": [
+      "Paris"
+    ],
+    "difficulty": "easy_external_knowledge",
+    "system": "Regular RAG",
+    "answer": "The capital of France is Paris.",
+    "latency": 1.1499700999993365,
+    "context": "Self-Attention Mechanism:\nAllows the model to weigh the importance of different words when processing each word, capturing long-range dependencies efficiently.\n\nPre-trained Language Models:\nLarge models trained on massive text corpora that can be fine-tuned for specific tasks:\n\nBERT (2018):\n- Bidirectional training using masked language modeling\n- Excellent for understanding tasks\n- Variants: RoBERTa, ALBERT, DistilBERT\n\nGPT Series:\n- GPT-2 (2019): 1.5 billion parameters, impressive text generation\n- GPT-3 (2020): 175 billion parameters, few-shot learning capabilities\n- GPT-4 (2023): Multimodal capabilities, enhanced reasoning\n- Autoregressive generation, excellent for creative tasks\n\nT5 (Text-to-Text Transfer Transformer):\nFrames all NLP tasks as text-to-text problems, providing a unified approach.\n\nSelf-Attention Mechanism:\nAllows the model to weigh the importance of different words when processing each word, capturing long-range dependencies efficiently.\n\nPre-trained Language Models:\nLarge models trained on massive text corpora that can be fine-tuned for specific tasks:\n\nBERT (2018):\n- Bidirectional training using masked language modeling\n- Excellent for understanding tasks\n- Variants: RoBERTa, ALBERT, DistilBERT\n\nGPT Series:\n- GPT-2 (2019): 1.5 billion parameters, impressive text generation\n- GPT-3 (2020): 175 billion parameters, few-shot learning capabilities\n- GPT-4 (2023): Multimodal capabilities, enhanced reasoning\n- Autoregressive generation, excellent for creative tasks\n\nT5 (Text-to-Text Transfer Transformer):\nFrames all NLP tasks as text-to-text problems, providing a unified approach.\n\nDeep Learning: Neural Networks at Scale\n\nDeep Learning is a specialized subset of machine learning that uses artificial neural networks with multiple layers (hence \"deep\") to progressively extract higher-level features from raw input. Unlike traditional machine learning algorithms that require manual feature engineering, deep learning models can automatically learn hierarchical representations from data.\n\nArchitecture of Neural Networks\n\nA neural network consists of interconnected layers of artificial neurons:\n\n1. Input Layer: Receives the raw data (images, text, audio, etc.)\n2. Hidden Layers: Intermediate layers that transform the input through learned parameters\n3. Output Layer: Produces the final prediction or classification\n\nEach connection between neurons has an associated weight that is adjusted during training through a process called backpropagation. The network learns by minimizing a loss function that measures the difference between predicted and actual outputs.\n\nDeep Learning: Neural Networks at Scale\n\nDeep Learning is a specialized subset of machine learning that uses artificial neural networks with multiple layers (hence \"deep\") to progressively extract higher-level features from raw input. Unlike traditional machine learning algorithms that require manual feature engineering, deep learning models can automatically learn hierarchical representations from data.\n\nArchitecture of Neural Networks\n\nA neural network consists of interconnected layers of artificial neurons:\n\n1. Input Layer: Receives the raw data (images, text, audio, etc.)\n2. Hidden Layers: Intermediate layers that transform the input through learned parameters\n3. Output Layer: Produces the final prediction or classification\n\nEach connection between neurons has an associated weight that is adjusted during training through a process called backpropagation. The network learns by minimizing a loss function that measures the difference between predicted and actual outputs.",
+    "relevance": 1,
+    "groundedness": 0
+  },
+  {
+    "id": 4,
+    "question": "What is the capital of France?",
+    "expected_topics": [
+      "Paris"
+    ],
+    "difficulty": "easy_external_knowledge",
+    "system": "Corrective RAG",
+    "answer": "The capital of France is Paris.",
+    "latency": 5.66523739999684,
+    "context": "",
+    "relevance": 1,
+    "groundedness": -1
+  },
+  {
+    "id": 5,
+    "question": "Who won the 2024 Super Bowl?",
+    "expected_topics": [
+      "Kansas City Chiefs"
+    ],
+    "difficulty": "hallucination_check",
+    "system": "No RAG",
+    "answer": "I'm sorry, but I don't have information about who will win the 2024 Super Bowl as it is an upcoming event that hasn't happened yet. The winner of the Super Bowl depends on the results of the NFL playoffs and regular season games in the year leading up to February. For the most accurate and current information, you should check reliable sports news sources or official NFL channels for updates closer to the date of the game.",
+    "latency": 2.4755870999943,
+    "context": "",
+    "relevance": 0,
+    "groundedness": -1
+  },
+  {
+    "id": 5,
+    "question": "Who won the 2024 Super Bowl?",
+    "expected_topics": [
+      "Kansas City Chiefs"
+    ],
+    "difficulty": "hallucination_check",
+    "system": "Regular RAG",
+    "answer": "I do not have information about who won the 2024 Super Bowl. My knowledge is up to date until 2023, and I don't have access to future events or outcomes. For the most current information on sports events, you should check reliable news sources or official NFL websites for details on recent and upcoming games.",
+    "latency": 2.637200600001961,
+    "context": "Transformers:\nRevolutionary architecture that uses self-attention mechanisms to process sequential data in parallel. Transformers have become the foundation for modern NLP:\n- BERT (Bidirectional Encoder Representations from Transformers): Pre-trained language representation\n- GPT (Generative Pre-trained Transformer): Autoregressive language model\n- T5 (Text-to-Text Transfer Transformer): Treats all NLP tasks as text-to-text\n- Vision Transformers (ViT): Applying transformers to computer vision\n\nGenerative Adversarial Networks (GANs):\nConsist of two neural networks competing against each other:\n- Generator: Creates fake data samples\n- Discriminator: Distinguishes between real and fake samples\nApplications: Image generation, style transfer, data augmentation, deepfakes\n\nTransformers:\nRevolutionary architecture that uses self-attention mechanisms to process sequential data in parallel. Transformers have become the foundation for modern NLP:\n- BERT (Bidirectional Encoder Representations from Transformers): Pre-trained language representation\n- GPT (Generative Pre-trained Transformer): Autoregressive language model\n- T5 (Text-to-Text Transfer Transformer): Treats all NLP tasks as text-to-text\n- Vision Transformers (ViT): Applying transformers to computer vision\n\nGenerative Adversarial Networks (GANs):\nConsist of two neural networks competing against each other:\n- Generator: Creates fake data samples\n- Discriminator: Distinguishes between real and fake samples\nApplications: Image generation, style transfer, data augmentation, deepfakes\n\nSelf-Attention Mechanism:\nAllows the model to weigh the importance of different words when processing each word, capturing long-range dependencies efficiently.\n\nPre-trained Language Models:\nLarge models trained on massive text corpora that can be fine-tuned for specific tasks:\n\nBERT (2018):\n- Bidirectional training using masked language modeling\n- Excellent for understanding tasks\n- Variants: RoBERTa, ALBERT, DistilBERT\n\nGPT Series:\n- GPT-2 (2019): 1.5 billion parameters, impressive text generation\n- GPT-3 (2020): 175 billion parameters, few-shot learning capabilities\n- GPT-4 (2023): Multimodal capabilities, enhanced reasoning\n- Autoregressive generation, excellent for creative tasks\n\nT5 (Text-to-Text Transfer Transformer):\nFrames all NLP tasks as text-to-text problems, providing a unified approach.\n\nSelf-Attention Mechanism:\nAllows the model to weigh the importance of different words when processing each word, capturing long-range dependencies efficiently.\n\nPre-trained Language Models:\nLarge models trained on massive text corpora that can be fine-tuned for specific tasks:\n\nBERT (2018):\n- Bidirectional training using masked language modeling\n- Excellent for understanding tasks\n- Variants: RoBERTa, ALBERT, DistilBERT\n\nGPT Series:\n- GPT-2 (2019): 1.5 billion parameters, impressive text generation\n- GPT-3 (2020): 175 billion parameters, few-shot learning capabilities\n- GPT-4 (2023): Multimodal capabilities, enhanced reasoning\n- Autoregressive generation, excellent for creative tasks\n\nT5 (Text-to-Text Transfer Transformer):\nFrames all NLP tasks as text-to-text problems, providing a unified approach.",
+    "relevance": 0,
+    "groundedness": 0
+  },
+  {
+    "id": 5,
+    "question": "Who won the 2024 Super Bowl?",
+    "expected_topics": [
+      "Kansas City Chiefs"
+    ],
+    "difficulty": "hallucination_check",
+    "system": "Corrective RAG",
+    "answer": "The Philadelphia Eagles won the 2024 Super Bowl. It was their second championship in franchise history. They defeated the Kansas City Chiefs with a score of 40-22.",
+    "latency": 92.59701690000657,
+    "context": "The Philadelphia Eagles on Sunday won their franchise's second Super Bowl championship, putting an end to the Kansas City Chiefs' dream of a three-peat.\n\nThe Philadelphia Eagles are Super Bowl Champions for the second time in franchise history after defeating the Kansas City Chiefs 40-22.\n\nThe return to bully ball was one of the stories of the 2024 ... Super Bowl LIX recap: Eagles cap off dramatic turnaround with dominant win over",
+    "relevance": 0,
+    "groundedness": 1
+  }
+]
