@@ -1,7 +1,9 @@
 """LangGraph workflow for the Corrective & Adaptive RAG Agent."""
 
+import asyncio
+
 from langgraph.graph import StateGraph, END
-from langgraph.graph.graph import CompiledGraph
+from langgraph.graph.state import CompiledStateGraph
 from typing import Optional, Dict, Any
 
 from src.agents.state import RAGState
@@ -15,7 +17,7 @@ logger = get_logger(__name__)
 def create_rag_graph(
     vector_store_manager: Optional[VectorStoreManager] = None,
     persist_directory: str = "./chroma_db"
-) -> CompiledGraph:
+) -> CompiledStateGraph:
     """
     Create the RAG agent graph with corrective mechanisms.
     
@@ -37,6 +39,7 @@ def create_rag_graph(
     workflow = StateGraph(RAGState)
     
     # Add nodes
+    workflow.add_node("check_cache", nodes.check_cache)
     workflow.add_node("rewrite", nodes.rewrite_query)
     workflow.add_node("retrieve", nodes.retrieve_documents)
     workflow.add_node("grade", nodes.grade_documents)
@@ -47,9 +50,21 @@ def create_rag_graph(
     workflow.add_node("increment", nodes.increment_iteration)
     
     # Set entry point
-    workflow.set_entry_point("rewrite")
+    workflow.set_entry_point("check_cache")
     
     # Add edges
+    
+    # Conditional edge from cache check
+    def decide_after_cache(state: RAGState) -> str:
+        if state.get("cache_hit", False):
+            return END
+        return "rewrite"
+        
+    workflow.add_conditional_edges(
+        "check_cache",
+        decide_after_cache
+    )
+    
     workflow.add_edge("rewrite", "retrieve")
     workflow.add_edge("retrieve", "grade")
     
@@ -129,13 +144,44 @@ def query_rag_agent(
         "relevant_docs_count": 0,
         "workflow_steps": [],
         "is_grounded": False,
-        "is_answer_good": False
+        "is_answer_good": False,
+        "cache_hit": False
     }
     
     # Run the workflow
     final_state = app.invoke(initial_state)
     
     return final_state
+
+
+async def async_query_rag_agent(
+    question: str,
+    max_iterations: int = 3,
+    vector_store_manager: Optional[VectorStoreManager] = None,
+    persist_directory: str = "./chroma_db"
+) -> Dict[str, Any]:
+    """
+    Async wrapper for query_rag_agent.
+
+    Offloads the synchronous LangGraph workflow to a thread so the
+    FastAPI event loop stays responsive for other requests.
+
+    Args:
+        question: User's question
+        max_iterations: Maximum correction iterations
+        vector_store_manager: Optional pre-initialized vector store manager
+        persist_directory: Directory for vector store persistence
+
+    Returns:
+        Dictionary with final state including answer and workflow steps
+    """
+    return await asyncio.to_thread(
+        query_rag_agent,
+        question,
+        max_iterations,
+        vector_store_manager,
+        persist_directory,
+    )
 
 
 if __name__ == "__main__":
