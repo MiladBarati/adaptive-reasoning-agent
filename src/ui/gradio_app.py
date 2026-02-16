@@ -5,10 +5,24 @@ from typing import List, Tuple, Optional, Any
 import os
 from dotenv import load_dotenv
 
-from src.agents.rag_graph import query_rag_agent
+from src.agents.rag_graph import create_rag_graph
 from src.core.vector_store import VectorStoreManager
+from src.core.telemetry import setup_telemetry
+from typing import List, Tuple, Optional, Any, Dict
+import json
 
 load_dotenv()
+
+# Initialize Telemetry
+setup_telemetry()
+if os.getenv("OTEL_ENABLED", "false").lower() == "true":
+    try:
+        from prometheus_client import start_http_server
+        # Start Prometheus metrics server on port 8000 to match docker-compose config
+        start_http_server(8000)
+        print("Prometheus metrics server started on port 8000")
+    except Exception as e:
+        print(f"Failed to start metrics server: {e}")
 
 # Global vector store manager
 vector_store_manager = VectorStoreManager(persist_directory="./chroma_db")
@@ -45,56 +59,87 @@ def query_agent(
     question: str,
     max_iterations: int,
     history: List[Tuple[str, str]]
-) -> Tuple[str, str, str, List[Tuple[str, str]]]:
+) -> Any:
     """
-    Query the RAG agent and return formatted results.
+    Query the RAG agent with streaming updates.
     
     Args:
         question: User's question
         max_iterations: Maximum correction iterations
         history: Chat history
         
-    Returns:
-        Tuple of (answer, workflow_info, documents_info, updated_history)
+    Yields:
+        Tuple of (updated_question, workflow_info, documents_info, updated_history)
     """
     if not question.strip():
-        return "", "Please enter a question.", "", history
+        yield "", "Please enter a question.", "", history
+        return
     
     try:
-        # Query the agent
-        result = query_rag_agent(
-            question=question,
-            max_iterations=max_iterations,
-            vector_store_manager=vector_store_manager
-        )
+        # Create the graph
+        app_graph = create_rag_graph(vector_store_manager=vector_store_manager)
         
-        # Extract results
-        answer = result.get("generation", "No answer generated")
-        workflow_steps = result.get("workflow_steps", [])
-        documents = result.get("documents", [])
-        iterations = result.get("iterations", 0)
-        relevant_docs = result.get("relevant_docs_count", 0)
+        # Initialize state
+        state: Dict[str, Any] = {
+            "question": question,
+            "rewritten_question": "",
+            "documents": [],
+            "generation": "",
+            "iterations": 0,
+            "max_iterations": max_iterations,
+            "web_search_needed": False,
+            "web_search_results": [],
+            "relevant_docs_count": 0,
+            "workflow_steps": [],
+            "is_grounded": False,
+            "is_answer_good": False
+        }
         
-        # Format workflow information
-        workflow_info = f"### Query Analysis\n\n"
-        workflow_info += f"- **Original Question**: {question}\n"
-        workflow_info += f"- **Rewritten Question**: {result.get('rewritten_question', 'N/A')}\n"
-        workflow_info += f"- **Iterations**: {iterations}/{max_iterations}\n"
-        workflow_info += f"- **Relevant Documents**: {relevant_docs}\n"
-        workflow_info += f"- **Web Search Used**: {'Yes' if result.get('web_search_results') else 'No'}\n\n"
-        workflow_info += format_workflow_steps(workflow_steps)
+        # Update history with a placeholder for the answer
+        history.append((question, "⏳ Thinking..."))
+        yield "", "Initializing workflow...", "Retrieving documents...", history
         
-        # Format documents
-        documents_info = format_documents(documents)
-        
-        # Update chat history
-        history.append((question, answer))
-        
-        return answer, workflow_info, documents_info, history
-    
+        # Run the workflow and yield updates
+        for output in app_graph.stream(state):
+            if not output:
+                continue
+                
+            # Each output is a dict mapping node names to state updates
+            node_name = list(output.keys())[0]
+            state = output[node_name]
+            
+            # Extract results
+            answer = state.get("generation", "⏳ Processing...")
+            workflow_steps = state.get("workflow_steps", [])
+            documents = state.get("documents", [])
+            iterations = state.get("iterations", 0)
+            relevant_docs = state.get("relevant_docs_count", 0)
+            
+            # Format workflow information
+            workflow_info = f"### Query Analysis (Step: {node_name.replace('_', ' ').title()})\n\n"
+            workflow_info += f"- **Original Question**: {question}\n"
+            workflow_info += f"- **Rewritten Question**: {state.get('rewritten_question', 'Pending...')}\n"
+            workflow_info += f"- **Iterations**: {iterations}/{max_iterations}\n"
+            workflow_info += f"- **Relevant Documents**: {relevant_docs}\n"
+            workflow_info += f"- **Web Search Used**: {'Yes' if state.get('web_search_results') else 'No'}\n\n"
+            workflow_info += format_workflow_steps(workflow_steps)
+            
+            # Format documents
+            documents_info = format_documents(documents)
+            
+            # Update chat history (replace the placeholder or append/update last)
+            if history and history[-1][0] == question:
+                history[-1] = (question, answer if answer else "⏳ Generating answer...")
+            
+            yield "", workflow_info, documents_info, history
+            
     except Exception as e:
         error_msg = f"Error: {str(e)}"
-        return error_msg, error_msg, "", history
+        if history and history[-1][1] == "⏳ Thinking...":
+            history[-1] = (question, error_msg)
+        else:
+            history.append((question, error_msg))
+        yield "", error_msg, "", history
 
 
 def upload_documents(files: Optional[List[Any]], chunk_size: int, chunk_overlap: int) -> str:
