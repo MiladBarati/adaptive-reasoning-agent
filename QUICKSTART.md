@@ -10,6 +10,7 @@ Get your Corrective & Adaptive RAG Agent up and running in minutes!
   - Groq API Key
   - Tavily API Key (for web search)
   - LangChain API Key (optional, for tracing)
+  - OTEL_ENABLED=true (optional, for OpenTelemetry tracing)
 
 ## Installation Steps
 
