@@ -3,8 +3,8 @@
 import pytest
 from langchain_core.documents import Document
 
-from src.core.vector_store import VectorStoreManager
 from src.core.retriever import AdvancedRetriever
+from src.core.vector_store import VectorStoreManager
 
 
 @pytest.mark.integration

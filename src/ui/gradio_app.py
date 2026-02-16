@@ -1,15 +1,14 @@
 """Gradio web interface for the Corrective & Adaptive RAG Agent."""
 
-import gradio as gr
-from typing import List, Tuple, Optional, Any
 import os
+from typing import Any
+
+import gradio as gr
 from dotenv import load_dotenv
 
 from src.agents.rag_graph import create_rag_graph
-from src.core.vector_store import VectorStoreManager
 from src.core.telemetry import setup_telemetry
-from typing import List, Tuple, Optional, Any, Dict
-import json
+from src.core.vector_store import VectorStoreManager
 
 load_dotenv()
 
@@ -29,7 +28,7 @@ if os.getenv("OTEL_ENABLED", "false").lower() == "true":
 vector_store_manager = VectorStoreManager(persist_directory="./chroma_db")
 
 
-def format_workflow_steps(steps: List[str]) -> str:
+def format_workflow_steps(steps: list[str]) -> str:
     """Format workflow steps for display."""
     if not steps:
         return "No workflow steps recorded."
@@ -41,7 +40,7 @@ def format_workflow_steps(steps: List[str]) -> str:
     return formatted
 
 
-def format_documents(documents: List[Any]) -> str:
+def format_documents(documents: list[Any]) -> str:
     """Format retrieved documents for display."""
     if not documents:
         return "No documents retrieved."
@@ -56,7 +55,7 @@ def format_documents(documents: List[Any]) -> str:
     return formatted
 
 
-def query_agent(question: str, max_iterations: int, history: List[Tuple[str, str]]) -> Any:
+def query_agent(question: str, max_iterations: int, history: list[tuple[str, str]]) -> Any:
     """
     Query the RAG agent with streaming updates.
 
@@ -77,7 +76,7 @@ def query_agent(question: str, max_iterations: int, history: List[Tuple[str, str
         app_graph = create_rag_graph(vector_store_manager=vector_store_manager)
 
         # Initialize state
-        state: Dict[str, Any] = {
+        state: dict[str, Any] = {
             "question": question,
             "rewritten_question": "",
             "documents": [],
@@ -143,7 +142,7 @@ def query_agent(question: str, max_iterations: int, history: List[Tuple[str, str
         yield "", error_msg, "", history
 
 
-def upload_documents(files: Optional[List[Any]], chunk_size: int, chunk_overlap: int) -> str:
+def upload_documents(files: list[Any] | None, chunk_size: int, chunk_overlap: int) -> str:
     """
     Upload and ingest documents into the vector store.
 

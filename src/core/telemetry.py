@@ -5,13 +5,11 @@ When disabled (default), all tracers return no-op spans with zero overhead.
 """
 
 import os
-from typing import Optional
 
-from opentelemetry import trace
+from opentelemetry import metrics, trace
+from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
-from opentelemetry.sdk.resources import Resource
-
 
 _initialized: bool = False
 
@@ -37,9 +35,8 @@ def setup_telemetry() -> None:
 
         # Initialize Prometheus metrics exporter
         from opentelemetry import metrics
-        from opentelemetry.sdk.metrics import MeterProvider
-        from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
         from opentelemetry.exporter.prometheus import PrometheusMetricReader
+        from opentelemetry.sdk.metrics import MeterProvider
 
         # PrometheusMetricReader automatically exposes a WSGI app to serve metrics
         # We will mount this in FastAPI later

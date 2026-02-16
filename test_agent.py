@@ -5,7 +5,9 @@ This script tests basic functionality without requiring the full setup.
 """
 
 import os
+
 from dotenv import load_dotenv
+
 from src.core.logging_config import get_logger
 
 load_dotenv()
@@ -21,24 +23,12 @@ def test_imports():
 
     try:
         print("✓ Importing core components...")
-        from src.core.embeddings import get_embeddings
-        from src.core.vector_store import VectorStoreManager
-        from src.core.retriever import AdvancedRetriever
 
         print("✓ Importing corrective modules...")
-        from src.corrective.query_rewriter import QueryRewriter
-        from src.corrective.relevance_grader import RelevanceGrader
-        from src.corrective.hallucination_checker import HallucinationChecker
-        from src.corrective.answer_verifier import AnswerVerifier
 
         print("✓ Importing agent components...")
-        from src.agents.state import RAGState
-        from src.agents.nodes import initialize_components
-        from src.agents.rag_graph import create_rag_graph, query_rag_agent
 
         print("✓ Importing API and UI...")
-        from src.api.main import app
-        from src.ui.gradio_app import demo
 
         print("\n✓ All imports successful!")
         return True

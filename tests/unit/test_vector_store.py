@@ -88,7 +88,7 @@ class TestVectorStoreManager:
         populated_vector_store.clear()
 
         # Verify store is cleared
-        stats_after = populated_vector_store.get_stats()
+        populated_vector_store.get_stats()
         # After clear, count should be 0 or store reinitialized
 
     def test_ingest_files(self, vector_store_manager, temp_vector_store_dir):

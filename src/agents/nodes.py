@@ -279,7 +279,7 @@ def generate_answer(state: RAGState) -> RAGState:
             Answer:"""
         )
 
-        chain = prompt | llm | StrOutputParser()
+        prompt | llm | StrOutputParser()
 
         # We need to access the raw response to get metadata.
         # StrOutputParser strips it. We should invoke the LLM directly or use a chain that preserves it if we want tokens.

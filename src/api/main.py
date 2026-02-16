@@ -202,7 +202,7 @@ async def query(request: QueryRequest) -> QueryResponse:
         )
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error processing query: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error processing query: {str(e)}") from e
 
 
 @app.post("/query/stream", tags=["RAG"])
@@ -323,7 +323,7 @@ async def ingest_text(request: IngestRequest) -> IngestResponse:
         raise HTTPException(
             status_code=500,
             detail=f"Error ingesting documents: {str(e)}",
-        )
+        ) from e
 
 
 @app.post("/ingest/files", response_model=IngestResponse, tags=["Ingestion"])
@@ -374,7 +374,7 @@ async def ingest_files(
         raise HTTPException(
             status_code=500,
             detail=f"Error ingesting files: {str(e)}",
-        )
+        ) from e
 
 
 @app.get("/stats", response_model=StatsResponse, tags=["Stats"])
@@ -400,7 +400,7 @@ async def get_stats() -> StatsResponse:
         raise HTTPException(
             status_code=500,
             detail=f"Error getting stats: {str(e)}",
-        )
+        ) from e
 
 
 @app.delete("/clear", tags=["Admin"])
@@ -422,7 +422,7 @@ async def clear_vector_store() -> dict[str, str]:
         raise HTTPException(
             status_code=500,
             detail=f"Error clearing vector store: {str(e)}",
-        )
+        ) from e
 
 
 if __name__ == "__main__":

@@ -1,11 +1,10 @@
 """Integration tests for the full RAG workflow."""
 
+from unittest.mock import MagicMock, Mock, patch
+
 import pytest
-from unittest.mock import Mock, patch, MagicMock
-from langchain_core.documents import Document
 
 from src.agents.rag_graph import create_rag_graph, query_rag_agent
-from src.core.vector_store import VectorStoreManager
 
 
 @pytest.mark.integration

@@ -1,17 +1,17 @@
 """Query rewriting for improved retrieval."""
 
-from typing import List
-from langchain_ollama import ChatOllama
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
+
 from dotenv import load_dotenv
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_ollama import ChatOllama
 
 from src.core.logging_config import get_logger
+from src.core.telemetry import get_meter
 
 load_dotenv()
 
 logger = get_logger(__name__)
-from src.core.telemetry import get_meter
 
 meter = get_meter(__name__)
 token_usage_counter = meter.create_counter(
@@ -80,7 +80,7 @@ class QueryRewriter:
             logger.error(f"Error rewriting query: {e}", exc_info=True)
             return question  # Return original on error
 
-    def rewrite_multiple(self, question: str, num_variations: int = 3) -> List[str]:
+    def rewrite_multiple(self, question: str, num_variations: int = 3) -> list[str]:
         """
         Generate multiple rewritten variations of a query.
 
@@ -94,7 +94,7 @@ class QueryRewriter:
         multi_prompt = ChatPromptTemplate.from_template(
             """You are an expert at reformulating search queries to improve document retrieval.
 
-            Generate {num} different variations of the user's question, each optimized for 
+            Generate {num} different variations of the user's question, each optimized for
             semantic search from a different angle. Each variation should:
             - Maintain the core intent
             - Approach the question from a different perspective

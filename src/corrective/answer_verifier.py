@@ -1,10 +1,10 @@
 """Answer quality verification."""
 
-from typing import Tuple
-from langchain_ollama import ChatOllama
-from langchain_core.prompts import ChatPromptTemplate
-from pydantic import BaseModel, Field
+
 from dotenv import load_dotenv
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_ollama import ChatOllama
+from pydantic import BaseModel, Field
 
 from src.core.logging_config import get_logger
 
@@ -43,7 +43,7 @@ class AnswerVerifier:
 
             {generation}
 
-            Give a binary score 'yes' or 'no' to indicate whether the answer addresses 
+            Give a binary score 'yes' or 'no' to indicate whether the answer addresses
             and resolves the question.
 
             Score 'yes' if the answer:
@@ -56,7 +56,7 @@ class AnswerVerifier:
             - Is off-topic or irrelevant
             - Is too vague or incomplete to be useful
 
-            Provide the binary score as a JSON with a single key 'binary_score' and 
+            Provide the binary score as a JSON with a single key 'binary_score' and
             no preamble or explanation."""
         )
 
@@ -89,7 +89,7 @@ class AnswerVerifier:
             # Default to accepting on error
             return True
 
-    def verify_with_feedback(self, question: str, generation: str) -> Tuple[bool, str]:
+    def verify_with_feedback(self, question: str, generation: str) -> tuple[bool, str]:
         """
         Verify answer with detailed feedback.
 

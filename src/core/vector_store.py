@@ -1,11 +1,12 @@
 """Vector store management using ChromaDB."""
 
 import os
-from typing import List, Optional, Dict, Any
+from typing import Any
+
 from langchain_chroma import Chroma
-from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 from langchain_core.retrievers import BaseRetriever
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from src.core.embeddings import get_embeddings
 from src.core.logging_config import get_logger
@@ -25,7 +26,7 @@ class VectorStoreManager:
         """
         self.persist_directory = persist_directory
         self.embeddings = get_embeddings()
-        self.vector_store: Optional[Chroma] = None
+        self.vector_store: Chroma | None = None
         self._initialize_vector_store()
 
     def _initialize_vector_store(self) -> None:
@@ -43,7 +44,7 @@ class VectorStoreManager:
             )
             logger.info(f"Created new vector store at {self.persist_directory}")
 
-    def add_documents(self, documents: List[Document]) -> List[str]:
+    def add_documents(self, documents: list[Document]) -> list[str]:
         """
         Add documents to the vector store.
 
@@ -62,11 +63,11 @@ class VectorStoreManager:
 
     def ingest_text_documents(
         self,
-        texts: List[str],
-        metadatas: Optional[List[Dict[str, Any]]] = None,
+        texts: list[str],
+        metadatas: list[dict[str, Any]] | None = None,
         chunk_size: int = 1000,
         chunk_overlap: int = 200,
-    ) -> List[str]:
+    ) -> list[str]:
         """
         Ingest text documents with chunking.
 
@@ -100,8 +101,8 @@ class VectorStoreManager:
         return self.add_documents(documents)
 
     def ingest_files(
-        self, file_paths: List[str], chunk_size: int = 1000, chunk_overlap: int = 200
-    ) -> List[str]:
+        self, file_paths: list[str], chunk_size: int = 1000, chunk_overlap: int = 200
+    ) -> list[str]:
         """
         Ingest documents from files.
 
@@ -118,7 +119,7 @@ class VectorStoreManager:
 
         for file_path in file_paths:
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     text = f.read()
                     texts.append(text)
                     metadatas.append({"source": file_path, "filename": os.path.basename(file_path)})
@@ -138,8 +139,8 @@ class VectorStoreManager:
         return self.vector_store
 
     def similarity_search(
-        self, query: str, k: int = 4, filter: Optional[Dict[str, Any]] = None
-    ) -> List[Document]:
+        self, query: str, k: int = 4, filter: dict[str, Any] | None = None
+    ) -> list[Document]:
         """
         Perform similarity search.
 
@@ -176,7 +177,7 @@ class VectorStoreManager:
             except Exception as e:
                 logger.error(f"Error clearing vector store: {e}", exc_info=True)
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """
         Get statistics about the vector store.
 

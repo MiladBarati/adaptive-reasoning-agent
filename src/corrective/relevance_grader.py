@@ -1,18 +1,18 @@
 """Document relevance grading."""
 
-from typing import List, Tuple
-from langchain_ollama import ChatOllama
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.documents import Document
-from pydantic import BaseModel, Field
+
 from dotenv import load_dotenv
+from langchain_core.documents import Document
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_ollama import ChatOllama
+from pydantic import BaseModel, Field
 
 from src.core.logging_config import get_logger
+from src.core.telemetry import get_meter
 
 load_dotenv()
 
 logger = get_logger(__name__)
-from src.core.telemetry import get_meter
 
 meter = get_meter(__name__)
 token_usage_counter = meter.create_counter(
@@ -52,13 +52,13 @@ class RelevanceGrader:
 
             {question}
 
-            If the document contains keywords or semantic meaning related to the question, 
+            If the document contains keywords or semantic meaning related to the question,
             grade it as relevant.
 
-            Give a binary score 'yes' or 'no' to indicate whether the document is 
+            Give a binary score 'yes' or 'no' to indicate whether the document is
             relevant to the question.
 
-            Provide the binary score as a JSON with a single key 'binary_score' and 
+            Provide the binary score as a JSON with a single key 'binary_score' and
             no preamble or explanation."""
         )
 
@@ -90,7 +90,7 @@ class RelevanceGrader:
             # But we want the convenience of Pydantic.
 
             # Let's try this:
-            msg = self.prompt.invoke({"document": document.page_content, "question": question})
+            self.prompt.invoke({"document": document.page_content, "question": question})
             # We can't easily get tokens from with_structured_output result directly if it's a Pydantic object.
             # But we can assume it consumes input + output.
             # Let's use the standard .invoke() on the LLM (without structured output wrapper) to gauge cost?
@@ -119,8 +119,8 @@ class RelevanceGrader:
             return True
 
     def grade_documents(
-        self, documents: List[Document], question: str
-    ) -> Tuple[List[Document], List[Document]]:
+        self, documents: list[Document], question: str
+    ) -> tuple[list[Document], list[Document]]:
         """
         Grade multiple documents and separate into relevant and irrelevant.
 
@@ -147,7 +147,7 @@ class RelevanceGrader:
 
         return relevant_docs, irrelevant_docs
 
-    def filter_relevant(self, documents: List[Document], question: str) -> List[Document]:
+    def filter_relevant(self, documents: list[Document], question: str) -> list[Document]:
         """
         Filter documents to only return relevant ones.
 

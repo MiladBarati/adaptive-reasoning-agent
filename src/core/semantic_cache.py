@@ -1,9 +1,7 @@
 """Semantic cache implementation using ChromaDB."""
 
-import os
-import json
-from typing import Optional, Dict, Any, List, Tuple
 from datetime import datetime
+from typing import Any
 
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
@@ -43,7 +41,7 @@ class SemanticCache:
         self.collection_name = collection_name
         self.similarity_threshold = similarity_threshold
         self.embeddings = get_embeddings()
-        self.vector_store: Optional[Chroma] = None
+        self.vector_store: Chroma | None = None
 
         self._initialize_cache()
 
@@ -59,7 +57,7 @@ class SemanticCache:
         except Exception as e:
             logger.error(f"Failed to initialize semantic cache: {e}", exc_info=True)
 
-    def check_cache(self, query: str) -> Optional[Dict[str, Any]]:
+    def check_cache(self, query: str) -> dict[str, Any] | None:
         """
         Check the cache for a semantically similar query.
 

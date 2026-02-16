@@ -1,11 +1,11 @@
 """Hallucination detection for generated answers."""
 
-from typing import List, Tuple
-from langchain_ollama import ChatOllama
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.documents import Document
-from pydantic import BaseModel, Field
+
 from dotenv import load_dotenv
+from langchain_core.documents import Document
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_ollama import ChatOllama
+from pydantic import BaseModel, Field
 
 from src.core.logging_config import get_logger
 
@@ -34,7 +34,7 @@ class HallucinationChecker:
         self.llm = ChatOllama(model=model, temperature=temperature)
 
         self.prompt = ChatPromptTemplate.from_template(
-            """You are a grader assessing whether an answer is grounded in / supported by 
+            """You are a grader assessing whether an answer is grounded in / supported by
             a set of retrieved facts.
 
             Here are the retrieved facts:
@@ -45,21 +45,21 @@ class HallucinationChecker:
 
             {generation}
 
-            Give a binary score 'yes' or 'no' to indicate whether the answer is grounded 
+            Give a binary score 'yes' or 'no' to indicate whether the answer is grounded
             in the retrieved facts.
 
-            Score 'yes' if the answer is supported by the facts, even if not all details 
+            Score 'yes' if the answer is supported by the facts, even if not all details
             are covered.
-            Score 'no' if the answer contains information that contradicts or is not 
+            Score 'no' if the answer contains information that contradicts or is not
             supported by the facts.
 
-            Provide the binary score as a JSON with a single key 'binary_score' and 
+            Provide the binary score as a JSON with a single key 'binary_score' and
             no preamble or explanation."""
         )
 
         self.chain = self.prompt | self.llm.with_structured_output(GradeHallucination)
 
-    def check(self, documents: List[Document], generation: str) -> bool:
+    def check(self, documents: list[Document], generation: str) -> bool:
         """
         Check if a generation is grounded in the documents.
 
@@ -89,7 +89,7 @@ class HallucinationChecker:
             # Default to not grounded on error to be safe
             return False
 
-    def check_with_reasoning(self, documents: List[Document], generation: str) -> Tuple[bool, str]:
+    def check_with_reasoning(self, documents: list[Document], generation: str) -> tuple[bool, str]:
         """
         Check for hallucination with reasoning explanation.
 
@@ -111,7 +111,7 @@ class HallucinationChecker:
 
             {generation}
 
-            Analyze whether the answer is supported by the facts. Explain your reasoning 
+            Analyze whether the answer is supported by the facts. Explain your reasoning
             in 2-3 sentences, then provide a final verdict: 'GROUNDED' or 'HALLUCINATED'.
 
             Format your response as:

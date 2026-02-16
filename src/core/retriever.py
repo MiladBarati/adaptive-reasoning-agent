@@ -1,15 +1,16 @@
 """Advanced retriever with multi-query and filtering capabilities."""
 
-from typing import List, Optional, Dict, Any
+from typing import Any
+
+from dotenv import load_dotenv
 from langchain_core.documents import Document
-from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.retrievers import BaseRetriever
-from dotenv import load_dotenv
+from langchain_groq import ChatGroq
 
-from src.core.vector_store import VectorStoreManager
 from src.core.logging_config import get_logger
 from src.core.telemetry import get_tracer
+from src.core.vector_store import VectorStoreManager
 
 load_dotenv()
 
@@ -36,7 +37,7 @@ class AdvancedRetriever:
         self.use_multi_query = use_multi_query
         self.llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0)
 
-    def retrieve(self, query: str, filter: Optional[Dict[str, Any]] = None) -> List[Document]:
+    def retrieve(self, query: str, filter: dict[str, Any] | None = None) -> list[Document]:
         """
         Retrieve relevant documents for a query.
 
@@ -61,8 +62,8 @@ class AdvancedRetriever:
             return docs
 
     def _multi_query_retrieve(
-        self, query: str, filter: Optional[Dict[str, Any]] = None
-    ) -> List[Document]:
+        self, query: str, filter: dict[str, Any] | None = None
+    ) -> list[Document]:
         """
         Retrieve documents using multiple query variations.
 
@@ -91,7 +92,7 @@ class AdvancedRetriever:
         # Return top-k unique documents
         return all_docs[: self.k]
 
-    def _generate_query_variations(self, query: str, num_variations: int = 3) -> List[str]:
+    def _generate_query_variations(self, query: str, num_variations: int = 3) -> list[str]:
         """
         Generate variations of the query for multi-query retrieval.
 
@@ -104,8 +105,8 @@ class AdvancedRetriever:
         """
         prompt = ChatPromptTemplate.from_template(
             """You are an AI assistant helping to improve document retrieval.
-            Given a user question, generate {num} alternative versions of the question 
-            to retrieve relevant documents from a vector database. 
+            Given a user question, generate {num} alternative versions of the question
+            to retrieve relevant documents from a vector database.
 
             Provide these alternative questions separated by newlines.
 
