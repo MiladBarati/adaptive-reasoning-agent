@@ -1,7 +1,7 @@
-
 import asyncio
 import time
 from src.agents.rag_graph import async_query_rag_agent
+
 
 async def test_cache():
     print("--- Test 1: First Query (Cache Miss) ---")
@@ -24,11 +24,13 @@ async def test_cache():
         print(f"Duration: {duration2:.2f}s")
         print(f"Workflow steps: {result2['workflow_steps']}")
         print(f"Cache hit: {result2.get('cache_hit', False)}")
-        
+
         # Only assert if both succeeded
-        if 'result1' in locals() and 'result2' in locals():
-             assert duration2 < duration1, "Cache hit should be faster"
-             assert "Cache HIT" in str(result2['workflow_steps']), "Second query should be a cache hit"
+        if "result1" in locals() and "result2" in locals():
+            assert duration2 < duration1, "Cache hit should be faster"
+            assert "Cache HIT" in str(result2["workflow_steps"]), (
+                "Second query should be a cache hit"
+            )
     except Exception as e:
         print(f"Test 2 failed: {e}")
 
@@ -42,6 +44,7 @@ async def test_cache():
         print(f"Cache hit: {result3.get('cache_hit', False)}")
     except Exception as e:
         print(f"Test 3 failed: {e}")
+
 
 if __name__ == "__main__":
     asyncio.run(test_cache())

@@ -18,51 +18,49 @@ logger = get_logger(__name__)
 
 def ingest_sample_documents() -> None:
     """Ingest all sample documents from data/documents directory."""
-    
+
     logger.info("=" * 80)
     logger.info("Corrective & Adaptive RAG Agent - Sample Data Setup")
     logger.info("=" * 80)
-    
+
     # Initialize vector store manager
     logger.info("1. Initializing vector store...")
     vector_store_manager = VectorStoreManager(persist_directory="./chroma_db")
-    
+
     # Get all sample documents
     documents_dir = Path("data/documents")
     if not documents_dir.exists():
         logger.error(f"Documents directory not found: {documents_dir}")
         return
-    
+
     # Find all .txt files
     doc_files = list(documents_dir.glob("*.txt"))
-    
+
     if not doc_files:
         logger.warning(f"No .txt files found in {documents_dir}")
         return
-    
+
     logger.info(f"2. Found {len(doc_files)} sample documents:")
     for doc_file in doc_files:
         logger.info(f"   - {doc_file.name}")
-    
+
     # Ingest documents
     logger.info("3. Ingesting documents into vector store...")
     file_paths = [str(doc_file) for doc_file in doc_files]
-    
+
     try:
         ids = vector_store_manager.ingest_files(
-            file_paths=file_paths,
-            chunk_size=1000,
-            chunk_overlap=200
+            file_paths=file_paths, chunk_size=1000, chunk_overlap=200
         )
-        
+
         logger.info(f"Successfully ingested {len(doc_files)} files into {len(ids)} chunks")
-        
+
         # Get and display stats
         stats = vector_store_manager.get_stats()
         logger.info("4. Vector Store Statistics:")
         logger.info(f"   - Total document chunks: {stats.get('document_count', 0)}")
         logger.info(f"   - Storage location: {stats.get('persist_directory', 'N/A')}")
-        
+
         logger.info("=" * 80)
         logger.info("Setup Complete!")
         logger.info("=" * 80)
@@ -77,7 +75,7 @@ def ingest_sample_documents() -> None:
         logger.info("  - What is RAG and how does it work?")
         logger.info("  - Compare supervised and unsupervised learning")
         logger.info("See data/examples/example_queries.txt for more test queries!")
-        
+
     except Exception as e:
         logger.error(f"Error ingesting documents: {e}", exc_info=True)
         raise
@@ -85,4 +83,3 @@ def ingest_sample_documents() -> None:
 
 if __name__ == "__main__":
     ingest_sample_documents()
-

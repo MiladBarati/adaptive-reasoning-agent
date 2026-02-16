@@ -6,7 +6,7 @@ from langchain_core.documents import Document
 
 class RAGState(TypedDict):
     """State for the RAG agent workflow."""
-    
+
     question: str  # Original user question
     rewritten_question: str  # Rewritten question for better retrieval
     documents: List[Document]  # Retrieved documents
@@ -20,4 +20,3 @@ class RAGState(TypedDict):
     is_grounded: bool  # Whether the answer is grounded in documents
     is_answer_good: bool  # Whether the answer is good
     cache_hit: bool  # Whether the answer came from cache
-

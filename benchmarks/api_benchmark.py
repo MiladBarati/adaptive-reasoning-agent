@@ -70,9 +70,7 @@ async def _timed_get(client: httpx.AsyncClient, url: str) -> float:
     return elapsed
 
 
-async def _timed_post(
-    client: httpx.AsyncClient, url: str, payload: dict
-) -> float:
+async def _timed_post(client: httpx.AsyncClient, url: str, payload: dict) -> float:
     start = time.perf_counter()
     resp = await client.post(url, json=payload)
     elapsed = time.perf_counter() - start
@@ -85,9 +83,7 @@ async def _timed_post(
 # ---------------------------------------------------------------------------
 
 
-async def bench_single_request_latency(
-    client: httpx.AsyncClient, base_url: str
-) -> Dict[str, Any]:
+async def bench_single_request_latency(client: httpx.AsyncClient, base_url: str) -> Dict[str, Any]:
     """Measure latency of individual endpoints sequentially."""
     results: Dict[str, Any] = {}
 
@@ -108,14 +104,16 @@ async def bench_single_request_latency(
         except httpx.HTTPStatusError:
             # If query fails (no docs, no API key, etc.) record -1
             times.append(-1)
-    results["query"] = _stats([t for t in times if t >= 0]) if any(t >= 0 for t in times) else {"error": "all requests failed"}
+    results["query"] = (
+        _stats([t for t in times if t >= 0])
+        if any(t >= 0 for t in times)
+        else {"error": "all requests failed"}
+    )
 
     return results
 
 
-async def bench_concurrent_throughput(
-    client: httpx.AsyncClient, base_url: str
-) -> Dict[str, Any]:
+async def bench_concurrent_throughput(client: httpx.AsyncClient, base_url: str) -> Dict[str, Any]:
     """Fire N concurrent /health requests and measure total throughput."""
     results: Dict[str, Any] = {}
 
@@ -163,9 +161,7 @@ async def bench_event_loop_responsiveness(
     under_load = _stats(under_load_times)
     results["health_under_query_load"] = under_load
     results["responsiveness_ratio"] = (
-        round(under_load["mean"] / baseline["mean"], 2)
-        if baseline["mean"] > 0
-        else None
+        round(under_load["mean"] / baseline["mean"], 2) if baseline["mean"] > 0 else None
     )
 
     return results
@@ -179,10 +175,10 @@ async def bench_event_loop_responsiveness(
 async def run_benchmark(tag: str, base_url: str) -> None:
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"  FastAPI Benchmark  —  tag: {tag}")
     print(f"  Target: {base_url}")
-    print(f"{'='*60}\n")
+    print(f"{'=' * 60}\n")
 
     async with httpx.AsyncClient(timeout=120.0) as client:
         # Quick smoke test

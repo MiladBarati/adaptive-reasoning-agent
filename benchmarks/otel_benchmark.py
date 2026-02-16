@@ -72,9 +72,7 @@ async def _timed_get(client: httpx.AsyncClient, url: str) -> float:
     return elapsed
 
 
-async def _timed_post(
-    client: httpx.AsyncClient, url: str, payload: dict
-) -> float:
+async def _timed_post(client: httpx.AsyncClient, url: str, payload: dict) -> float:
     start = time.perf_counter()
     resp = await client.post(url, json=payload)
     elapsed = time.perf_counter() - start
@@ -87,20 +85,13 @@ async def _timed_post(
 # ---------------------------------------------------------------------------
 
 
-async def bench_health(
-    client: httpx.AsyncClient, base_url: str
-) -> Dict[str, Any]:
+async def bench_health(client: httpx.AsyncClient, base_url: str) -> Dict[str, Any]:
     """Measure /health latency as a control (should be unaffected)."""
-    times = [
-        await _timed_get(client, f"{base_url}/health")
-        for _ in range(HEALTH_ROUNDS)
-    ]
+    times = [await _timed_get(client, f"{base_url}/health") for _ in range(HEALTH_ROUNDS)]
     return _stats(times)
 
 
-async def bench_query(
-    client: httpx.AsyncClient, base_url: str
-) -> Dict[str, Any]:
+async def bench_query(client: httpx.AsyncClient, base_url: str) -> Dict[str, Any]:
     """Measure end-to-end /query latency."""
     times: List[float] = []
     for i in range(QUERY_ROUNDS):
@@ -155,8 +146,12 @@ def compare_results(pre_path: Path, post_path: Path) -> None:
             overhead_pct = 0
 
         print(f"\n  --- {section.upper()} ---")
-        print(f"    Pre-OTel  mean: {pre_mean:.4f}s  (p50={pre_data.get('p50', 0):.4f}s, p95={pre_data.get('p95', 0):.4f}s)")
-        print(f"    Post-OTel mean: {post_mean:.4f}s  (p50={post_data.get('p50', 0):.4f}s, p95={post_data.get('p95', 0):.4f}s)")
+        print(
+            f"    Pre-OTel  mean: {pre_mean:.4f}s  (p50={pre_data.get('p50', 0):.4f}s, p95={pre_data.get('p95', 0):.4f}s)"
+        )
+        print(
+            f"    Post-OTel mean: {post_mean:.4f}s  (p50={post_data.get('p50', 0):.4f}s, p95={post_data.get('p95', 0):.4f}s)"
+        )
         print(f"    Overhead:       {overhead_pct:+.2f}%")
 
     print()

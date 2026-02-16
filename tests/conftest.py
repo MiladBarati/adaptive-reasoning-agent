@@ -46,15 +46,15 @@ def sample_documents() -> list[Document]:
     return [
         Document(
             page_content="Machine learning is a subset of artificial intelligence that enables systems to learn from data.",
-            metadata={"source": "test1", "topic": "machine_learning"}
+            metadata={"source": "test1", "topic": "machine_learning"},
         ),
         Document(
             page_content="Deep learning uses neural networks with multiple layers to learn complex patterns.",
-            metadata={"source": "test2", "topic": "deep_learning"}
+            metadata={"source": "test2", "topic": "deep_learning"},
         ),
         Document(
             page_content="Natural language processing helps computers understand human language.",
-            metadata={"source": "test3", "topic": "nlp"}
+            metadata={"source": "test3", "topic": "nlp"},
         ),
     ]
 
@@ -69,17 +69,19 @@ def populated_vector_store(vector_store_manager, sample_documents) -> VectorStor
 @pytest.fixture
 def mock_llm_response():
     """Mock LLM response."""
+
     def _create_mock_response(content: str):
         mock = Mock()
         mock.content = content
         return mock
+
     return _create_mock_response
 
 
 @pytest.fixture
 def mock_groq_llm(mock_llm_response):
     """Mock Groq LLM."""
-    with patch('langchain_groq.ChatGroq') as mock_llm_class:
+    with patch("langchain_groq.ChatGroq") as mock_llm_class:
         mock_llm = Mock()
         mock_llm.invoke = Mock(return_value=mock_llm_response("Mocked response"))
         mock_llm.with_structured_output = Mock(return_value=mock_llm)
@@ -99,17 +101,19 @@ def mock_embeddings():
 @pytest.fixture
 def mock_tavily_client():
     """Mock Tavily search client."""
-    with patch('tavily.TavilyClient') as mock_client_class:
+    with patch("tavily.TavilyClient") as mock_client_class:
         mock_client = Mock()
-        mock_client.search = Mock(return_value={
-            "results": [
-                {
-                    "title": "Test Result",
-                    "url": "https://example.com",
-                    "content": "This is test content from web search."
-                }
-            ]
-        })
+        mock_client.search = Mock(
+            return_value={
+                "results": [
+                    {
+                        "title": "Test Result",
+                        "url": "https://example.com",
+                        "content": "This is test content from web search.",
+                    }
+                ]
+            }
+        )
         mock_client_class.return_value = mock_client
         yield mock_client
 
@@ -137,16 +141,17 @@ def sample_rag_state():
         "relevant_docs_count": 0,
         "workflow_steps": [],
         "is_grounded": False,
-        "is_answer_good": False
+        "is_answer_good": False,
     }
 
 
 @pytest.fixture
 def mock_structured_output():
     """Mock structured output from LLM."""
+
     def _create_mock_output(binary_score: str):
         mock = Mock()
         mock.binary_score = binary_score
         return mock
-    return _create_mock_output
 
+    return _create_mock_output

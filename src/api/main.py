@@ -33,6 +33,7 @@ vector_store_manager: Optional[VectorStoreManager] = None
 # Lifespan (replaces deprecated @app.on_event("startup"))
 # ---------------------------------------------------------------------------
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Initialize components on startup, clean up on shutdown."""
@@ -62,12 +63,9 @@ app = FastAPI(
 # Get CORS origins from environment variable
 cors_origins_str = os.getenv(
     "CORS_ORIGINS",
-    "http://localhost:3000,http://localhost:8000,"
-    "http://127.0.0.1:3000,http://127.0.0.1:8000",
+    "http://localhost:3000,http://localhost:8000,http://127.0.0.1:3000,http://127.0.0.1:8000",
 )
-cors_origins = [
-    origin.strip() for origin in cors_origins_str.split(",") if origin.strip()
-]
+cors_origins = [origin.strip() for origin in cors_origins_str.split(",") if origin.strip()]
 logger.info(f"CORS allowed origins: {cors_origins}")
 
 app.add_middleware(
@@ -81,15 +79,19 @@ app.add_middleware(
 # Auto-instrument FastAPI with OpenTelemetry (adds HTTP spans to all endpoints)
 try:
     from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+
     FastAPIInstrumentor.instrument_app(app)
     logger.info("FastAPI OpenTelemetry instrumentation enabled")
 
     # Expose Prometheus metrics endpoint
     from prometheus_client import make_asgi_app
+
     metrics_app = make_asgi_app()
     app.mount("/metrics", metrics_app)
 except ImportError:
-    logger.debug("opentelemetry-instrumentation-fastapi or prometheus_client not installed, skipping")
+    logger.debug(
+        "opentelemetry-instrumentation-fastapi or prometheus_client not installed, skipping"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -101,9 +103,7 @@ class QueryRequest(BaseModel):
     """Request model for query endpoint."""
 
     question: str = Field(..., description="User's question")
-    max_iterations: int = Field(
-        3, description="Maximum correction iterations", ge=1, le=10
-    )
+    max_iterations: int = Field(3, description="Maximum correction iterations", ge=1, le=10)
     stream: bool = Field(False, description="Enable streaming response")
 
 
@@ -113,16 +113,10 @@ class QueryResponse(BaseModel):
     answer: str = Field(..., description="Generated answer")
     question: str = Field(..., description="Original question")
     rewritten_question: str = Field("", description="Rewritten question")
-    workflow_steps: List[str] = Field(
-        [], description="List of workflow steps taken"
-    )
+    workflow_steps: List[str] = Field([], description="List of workflow steps taken")
     iterations: int = Field(0, description="Number of iterations performed")
-    relevant_docs_count: int = Field(
-        0, description="Number of relevant documents found"
-    )
-    web_search_used: bool = Field(
-        False, description="Whether web search was used"
-    )
+    relevant_docs_count: int = Field(0, description="Number of relevant documents found")
+    web_search_used: bool = Field(False, description="Whether web search was used")
 
 
 class IngestRequest(BaseModel):
@@ -132,33 +126,23 @@ class IngestRequest(BaseModel):
     metadatas: Optional[List[Dict[str, Any]]] = Field(
         None, description="Optional metadata for each text"
     )
-    chunk_size: int = Field(
-        1000, description="Size of text chunks", ge=100, le=5000
-    )
-    chunk_overlap: int = Field(
-        200, description="Overlap between chunks", ge=0, le=1000
-    )
+    chunk_size: int = Field(1000, description="Size of text chunks", ge=100, le=5000)
+    chunk_overlap: int = Field(200, description="Overlap between chunks", ge=0, le=1000)
 
 
 class IngestResponse(BaseModel):
     """Response model for ingestion."""
 
     message: str = Field(..., description="Status message")
-    document_count: int = Field(
-        ..., description="Number of documents ingested"
-    )
+    document_count: int = Field(..., description="Number of documents ingested")
     ids: List[str] = Field([], description="Document IDs")
 
 
 class StatsResponse(BaseModel):
     """Response model for stats endpoint."""
 
-    document_count: int = Field(
-        ..., description="Total number of documents in vector store"
-    )
-    persist_directory: str = Field(
-        ..., description="Vector store directory"
-    )
+    document_count: int = Field(..., description="Total number of documents in vector store")
+    persist_directory: str = Field(..., description="Vector store directory")
 
 
 # ---------------------------------------------------------------------------
@@ -181,9 +165,7 @@ async def health_check() -> Dict[str, str]:
     """Health check endpoint."""
     return {
         "status": "healthy",
-        "vector_store": (
-            "initialized" if vector_store_manager else "not initialized"
-        ),
+        "vector_store": ("initialized" if vector_store_manager else "not initialized"),
     }
 
 
@@ -199,9 +181,7 @@ async def query(request: QueryRequest) -> QueryResponse:
         Query response with answer and metadata
     """
     if not vector_store_manager:
-        raise HTTPException(
-            status_code=500, detail="Vector store not initialized"
-        )
+        raise HTTPException(status_code=500, detail="Vector store not initialized")
 
     try:
         # Run the RAG agent asynchronously (offloaded to a thread)
@@ -222,9 +202,7 @@ async def query(request: QueryRequest) -> QueryResponse:
         )
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error processing query: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Error processing query: {str(e)}")
 
 
 @app.post("/query/stream", tags=["RAG"])
@@ -239,17 +217,13 @@ async def query_stream(request: QueryRequest) -> StreamingResponse:
         Server-sent events stream
     """
     if not vector_store_manager:
-        raise HTTPException(
-            status_code=500, detail="Vector store not initialized"
-        )
+        raise HTTPException(status_code=500, detail="Vector store not initialized")
 
     async def event_generator() -> AsyncGenerator[str, None]:
         """Generate server-sent events for streaming."""
         try:
             # Create the graph (fast, CPU-only)
-            app_graph = create_rag_graph(
-                vector_store_manager=vector_store_manager
-            )
+            app_graph = create_rag_graph(vector_store_manager=vector_store_manager)
 
             # Initialize state
             initial_state: Dict[str, Any] = {
@@ -285,9 +259,7 @@ async def query_stream(request: QueryRequest) -> StreamingResponse:
                     event_data: Dict[str, Any] = {
                         "type": "state_update",
                         "data": {
-                            "workflow_steps": state.get(
-                                "workflow_steps", []
-                            ),
+                            "workflow_steps": state.get("workflow_steps", []),
                             "iterations": state.get("iterations", 0),
                         },
                     }
@@ -300,14 +272,10 @@ async def query_stream(request: QueryRequest) -> StreamingResponse:
                 "data": {
                     "answer": final_state.get("generation", ""),
                     "question": final_state.get("question", ""),
-                    "rewritten_question": final_state.get(
-                        "rewritten_question", ""
-                    ),
+                    "rewritten_question": final_state.get("rewritten_question", ""),
                     "workflow_steps": final_state.get("workflow_steps", []),
                     "iterations": final_state.get("iterations", 0),
-                    "relevant_docs_count": final_state.get(
-                        "relevant_docs_count", 0
-                    ),
+                    "relevant_docs_count": final_state.get("relevant_docs_count", 0),
                 },
             }
             yield f"data: {json.dumps(final_event)}\n\n"
@@ -319,9 +287,7 @@ async def query_stream(request: QueryRequest) -> StreamingResponse:
             }
             yield f"data: {json.dumps(error_event)}\n\n"
 
-    return StreamingResponse(
-        event_generator(), media_type="text/event-stream"
-    )
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
 
 
 @app.post("/ingest/text", response_model=IngestResponse, tags=["Ingestion"])
@@ -336,9 +302,7 @@ async def ingest_text(request: IngestRequest) -> IngestResponse:
         Ingestion response with status
     """
     if not vector_store_manager:
-        raise HTTPException(
-            status_code=500, detail="Vector store not initialized"
-        )
+        raise HTTPException(status_code=500, detail="Vector store not initialized")
 
     try:
         ids = await asyncio.to_thread(
@@ -380,9 +344,7 @@ async def ingest_files(
         Ingestion response with status
     """
     if not vector_store_manager:
-        raise HTTPException(
-            status_code=500, detail="Vector store not initialized"
-        )
+        raise HTTPException(status_code=500, detail="Vector store not initialized")
 
     try:
         texts = []
@@ -392,9 +354,7 @@ async def ingest_files(
             content = await file.read()
             text = content.decode("utf-8")
             texts.append(text)
-            metadatas.append(
-                {"source": file.filename, "filename": file.filename}
-            )
+            metadatas.append({"source": file.filename, "filename": file.filename})
 
         ids = await asyncio.to_thread(
             vector_store_manager.ingest_text_documents,
@@ -405,10 +365,7 @@ async def ingest_files(
         )
 
         return IngestResponse(
-            message=(
-                f"Successfully ingested {len(files)} files "
-                f"into {len(ids)} chunks"
-            ),
+            message=(f"Successfully ingested {len(files)} files into {len(ids)} chunks"),
             document_count=len(ids),
             ids=ids,
         )
@@ -429,9 +386,7 @@ async def get_stats() -> StatsResponse:
         Statistics about the vector store
     """
     if not vector_store_manager:
-        raise HTTPException(
-            status_code=500, detail="Vector store not initialized"
-        )
+        raise HTTPException(status_code=500, detail="Vector store not initialized")
 
     try:
         stats = await asyncio.to_thread(vector_store_manager.get_stats)
@@ -457,9 +412,7 @@ async def clear_vector_store() -> Dict[str, str]:
         Status message
     """
     if not vector_store_manager:
-        raise HTTPException(
-            status_code=500, detail="Vector store not initialized"
-        )
+        raise HTTPException(status_code=500, detail="Vector store not initialized")
 
     try:
         await asyncio.to_thread(vector_store_manager.clear)

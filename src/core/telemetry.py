@@ -64,4 +64,5 @@ def get_meter(name: str) -> "metrics.Meter":
     If telemetry was not set up or is disabled, this returns a no-op meter.
     """
     from opentelemetry import metrics
+
     return metrics.get_meter(name)
