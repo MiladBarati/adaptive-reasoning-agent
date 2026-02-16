@@ -1,26 +1,32 @@
 # Corrective & Adaptive RAG Agents
 
-A sophisticated Retrieval-Augmented Generation (RAG) system with adaptive corrective mechanisms for higher factual accuracy. Built with LangChain, LangGraph, and Groq LLM.
+A sophisticated Retrieval-Augmented Generation (RAG) system with adaptive corrective mechanisms for higher factual accuracy. Built with LangChain, LangGraph, and Ollama (local LLM).
 
 ## Features
 
+- **Semantic Caching**: Instantly returns answers for repeated queries using ChromaDB (verified ~3.6x speedup)
 - **Query Rewriting**: Automatically reformulates queries for better retrieval
 - **Retrieval Grading**: Evaluates document relevance before generation
 - **Self-Reflection**: Checks for hallucinations and factual errors
 - **Answer Verification**: Validates answers against sources
 - **Iterative Refinement**: Loops back when quality is insufficient
 - **Web Search Fallback**: Uses Tavily search when local documents are insufficient
+- **Distributed Tracing**: Full observability pipeline with OpenTelemetry (negligible overhead, see [BENCHMARK_OTEL.md](BENCHMARK_OTEL.md))
+- **Async API Architecture**: Non-blocking FastAPI endpoints via `asyncio.to_thread()` — event loop stays responsive under heavy load (see [BENCHMARK.md](BENCHMARK.md))
 
 ## Architecture
 
-The system uses a LangGraph state machine with multiple corrective loops:
+The system uses a LangGraph state machine with multiple corrective loops, served via an async FastAPI layer that offloads blocking LLM/DB calls to threads:
 
-1. Query Rewriting → Retrieval
-2. Retrieval → Relevance Grading
-3. Relevance Grading → Generation (or Web Search if all irrelevant)
-4. Generation → Hallucination Check
-5. Hallucination Check → Answer Verification
-6. Answer Verification → End or Loop Back (if needed)
+1. Check Semantic Cache (Impact: Instant return if hit)
+2. Query Rewriting → Retrieval
+3. Retrieval → Relevance Grading
+4. Relevance Grading → Generation (or Web Search if all irrelevant)
+5. Generation → Hallucination Check
+6. Hallucination Check → Answer Verification
+7. Answer Verification → End (store in Cache) or Loop Back
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed diagrams and technology decisions.
 
 ## Installation
 
@@ -28,6 +34,8 @@ The system uses a LangGraph state machine with multiple corrective loops:
 
 - Python 3.11 or higher (required by `pyproject.toml`)
 - pip (Python package manager)
+- [Ollama](https://ollama.com/) (installed and running)
+- `qwen2.5:14b` model pulled (`ollama pull qwen2.5:14b`)
 - API Keys (see below)
 
 ### Setup Steps
@@ -98,6 +106,8 @@ Run the FastAPI server:
 uvicorn src.api.main:app --reload --port 8000
 ```
 
+The API uses an **async architecture** — all blocking calls (LLM inference, vector DB ops) are offloaded to threads via `asyncio.to_thread()`, keeping the event loop responsive. See [BENCHMARK.md](BENCHMARK.md) for performance numbers.
+
 API endpoints:
 - `GET /` - Root endpoint with API information
 - `GET /health` - Health check
@@ -135,7 +145,7 @@ print(result["generation"])
 │   ├── agents/          # LangGraph workflow and nodes
 │   │   ├── state.py     # State management
 │   │   ├── nodes.py     # Agent nodes (rewrite, retrieve, grade, etc.)
-│   │   └── rag_graph.py # Graph composition and query function
+│   │   └── rag_graph.py # Graph composition, sync & async entry points
 │   ├── core/            # Core RAG components
 │   │   ├── embeddings.py      # Embedding models
 │   │   ├── vector_store.py    # ChromaDB management
@@ -146,10 +156,13 @@ print(result["generation"])
 │   │   ├── relevance_grader.py     # Document relevance grading
 │   │   ├── hallucination_checker.py # Hallucination detection
 │   │   └── answer_verifier.py       # Answer verification
-│   ├── api/             # FastAPI backend
-│   │   └── main.py      # API endpoints
+│   ├── api/             # FastAPI backend (async)
+│   │   └── main.py      # API endpoints with lifespan handler
 │   └── ui/              # Gradio interface
 │       └── gradio_app.py # Web UI
+├── benchmarks/          # Performance benchmarking
+│   ├── api_benchmark.py # Latency, throughput & responsiveness tests
+│   └── results/         # JSON benchmark results
 ├── tests/               # Test suite
 │   ├── unit/            # Unit tests
 │   ├── integration/     # Integration tests
@@ -167,6 +180,8 @@ print(result["generation"])
 ├── pyproject.toml       # Modern Python project configuration
 ├── pytest.ini          # Pytest configuration
 ├── README.md            # This file
+├── ARCHITECTURE.md      # Detailed architecture documentation
+├── BENCHMARK.md         # Async migration benchmark results
 ├── QUICKSTART.md        # Quick start guide
 └── PROJECT_SUMMARY.md   # Detailed project summary
 ```
@@ -175,7 +190,7 @@ print(result["generation"])
 
 ### Default Settings
 
-- **LLM Model**: `llama-3.3-70b-versatile` (Groq)
+- **LLM Model**: `qwen2.5:14b` (Ollama) - Tunable via `src/agents/nodes.py`
 - **Embeddings**: `sentence-transformers/all-MiniLM-L6-v2`
 - **Chunk Size**: 1000 characters
 - **Chunk Overlap**: 200 characters
@@ -190,11 +205,12 @@ This project requires **Python 3.11 or higher** (as specified in `pyproject.toml
 ### Environment Variables
 
 Required API keys (see `.env.example` for full list):
-- `GROQ_API_KEY` - Required for LLM inference
+- `GROQ_API_KEY` - Optional (if switching back to Groq)
 - `TAVILY_API_KEY` - Required for web search fallback
 - `LANGCHAIN_API_KEY` - Optional, for LangChain tracing
 - `LANGSMITH_API_KEY` - Optional, for LangSmith observability
 - `CORS_ORIGINS` - Optional, comma-separated list of allowed CORS origins
+- `OTEL_ENABLED` - Optional, set to `true` to enable OpenTelemetry tracing (default: `false`)
 
 ## Testing
 
@@ -274,6 +290,27 @@ The project maintains a minimum coverage threshold of 60% (configured in `pytest
 
 See `tests/README.md` for detailed testing documentation.
 
+## Observability
+
+The project supports **OpenTelemetry (OTel)** for distributed tracing. This provides deep visibility into the RAG pipeline execution, including:
+- API request latency
+- Vector DB retrieval times (and document counts)
+- Semantic Cache hits/misses
+- LLM generation duration
+- Corrective loop iterations
+
+### Enabling Tracing
+
+Tracing is **opt-in** to ensure zero overhead by default. To enable it:
+
+1. Set `OTEL_ENABLED=true` in your `.env` file.
+2. Restart the application.
+3. Traces will be output to the console (standard output) via `ConsoleSpanExporter`.
+
+### Performance Impact
+
+We benchmarked the tracing instrumentation and found **negligible overhead** (<1ms per span), which is completely masked by the variance in LLM generation times. See [BENCHMARK_OTEL.md](BENCHMARK_OTEL.md) for the full report.
+
 ## Examples
 
 ### Sample Documents
@@ -338,9 +375,14 @@ black .
 
 ## Additional Resources
 
-- **QUICKSTART.md** - Step-by-step setup guide
-- **PROJECT_SUMMARY.md** - Detailed project overview and implementation details
-- **tests/README.md** - Comprehensive testing documentation
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Full architecture docs with diagrams, technology choices, and recommendations
+- **[BENCHMARK.md](BENCHMARK.md)** - Async migration benchmark results
+- **[BENCHMARK_CORE.md](BENCHMARK_CORE.md)** - Core RAG vs Baselines benchmark results
+- **[BENCHMARK_OTEL.md](BENCHMARK_OTEL.md)** - OpenTelemetry overhead benchmark results
+- **[BENCHMARK_REDIS.md](BENCHMARK_REDIS.md)** - Semantic Cache benchmark results (Ollama)
+- **[QUICKSTART.md](QUICKSTART.md)** - Step-by-step setup guide
+- **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** - Detailed project overview and implementation details
+- **[tests/README.md](tests/README.md)** - Comprehensive testing documentation
 
 ## License
 
