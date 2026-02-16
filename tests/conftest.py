@@ -42,15 +42,23 @@ def sample_documents() -> list[Document]:
     """Sample documents for testing."""
     return [
         Document(
-            page_content="Machine learning is a subset of artificial intelligence that enables systems to learn from data.",
+            page_content=(
+                "Machine learning is a subset of artificial intelligence that enables "
+                "systems to learn from data."
+            ),
             metadata={"source": "test1", "topic": "machine_learning"},
         ),
         Document(
-            page_content="Deep learning uses neural networks with multiple layers to learn complex patterns.",
+            page_content=(
+                "Deep learning uses neural networks with multiple layers to learn complex "
+                "patterns."
+            ),
             metadata={"source": "test2", "topic": "deep_learning"},
         ),
         Document(
-            page_content="Natural language processing helps computers understand human language.",
+            page_content=(
+                "Natural language processing helps computers understand human language."
+            ),
             metadata={"source": "test3", "topic": "nlp"},
         ),
     ]

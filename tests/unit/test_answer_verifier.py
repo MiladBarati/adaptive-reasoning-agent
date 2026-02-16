@@ -37,7 +37,10 @@ class TestAnswerVerifier:
         verifier.chain.invoke.return_value = mock_structured_output
 
         question = "What is machine learning?"
-        generation = "Machine learning is a subset of artificial intelligence that enables systems to learn from data."
+        generation = (
+            "Machine learning is a subset of artificial intelligence that enables systems "
+            "to learn from data."
+        )
 
         is_good = verifier.verify(question, generation)
 

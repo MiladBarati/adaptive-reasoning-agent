@@ -14,6 +14,7 @@ dependencies = [
     "langchain-core>=1.0.0,<2.0.0",
     "langchain-groq>=1.0.0",
     "langchain-huggingface>=0.1.0",
+    "langchain-ollama>=0.1.0",
     "langgraph>=0.2.28",
     "pydantic==2.9.2",
     "python-dotenv==1.0.1",
@@ -33,30 +34,34 @@ dependencies = [
 [tool.ruff]
 line-length = 100
 target-version = "py311"
-fix = true
 
 [tool.ruff.lint]
-
-extend-unsafe-fixes = ["B904", "UP"]
-
-select = [
-    "E",   # pycodestyle errors
-    "W",   # pycodestyle warnings
-    "F",   # pyflakes
-    "I",   # isort
-    "B",   # flake8-bugbear
-    "C4",  # flake8-comprehensions
-    "UP",  # pyupgrade
-    "I",   # isort
-]
+# Removed "E501" from ignore so Ruff can warn you if the 
+# formatter can't automatically wrap a line.
 ignore = [
-    "E501",  # line too long (handled by black)
     "B008",  # do not perform function calls in argument defaults
 ]
 
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "B",    # flake8-bugbear
+    "C4",   # flake8-comprehensions
+    "UP",   # pyupgrade
+]
 
+extend-unsafe-fixes = ["B904", "UP"]
 
-per-file-ignores = {"__init__.py" = ["F401"]}  # unused imports
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[tool.ruff.format]
+# This ensures the formatter matches your 100-character preference
+
+quote-style = "double"
+indent-style = "space"
 
 [tool.black]
 line-length = 100

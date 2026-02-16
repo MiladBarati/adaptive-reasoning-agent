@@ -80,20 +80,23 @@ class RelevanceGrader:
             # with_structured_output usually returns just the object.
             # To get metadata, we might need to use the raw response.
             # LangChain's with_structured_output typically hides the raw message.
-            # However, for ChatOllama, we can just invoke the model with the tool binding or standard structured output
-            # and hopefully it attaches metadata?
+            # However, for ChatOllama, we can just invoke the model with the tool binding or
+            # standard structured output and hopefully it attaches metadata?
             # Actually, standard with_structured_output does NOT return metadata easily.
             # A cleaner way is to use a callback handler, but that's complex to setup here locally.
-            # Let's try to trust that ChatOllama with structured output MIGHT attach it to the tool output? No.
+            # Let's try to trust that ChatOllama with structured output MIGHT attach it to the tool
+            # output? No.
 
             # Alternative: Use the raw chain and parse it.
             # But we want the convenience of Pydantic.
 
             # Let's try this:
             self.prompt.invoke({"document": document.page_content, "question": question})
-            # We can't easily get tokens from with_structured_output result directly if it's a Pydantic object.
+            # We can't easily get tokens from with_structured_output result directly if it's a
+            # Pydantic object.
             # But we can assume it consumes input + output.
-            # Let's use the standard .invoke() on the LLM (without structured output wrapper) to gauge cost?
+            # Let's use the standard .invoke() on the LLM (without structured output wrapper) to
+            # gauge cost?
             # No, that changes behavior.
 
             # Bestbet for now without refactoring everything to callbacks:
@@ -102,13 +105,16 @@ class RelevanceGrader:
             # Just for this one, let's keep using the chain but accept we might miss tokens OR
             # Implement a quick callback handler?
             # Actually, `with_structured_output` on ChatOllama is experimental.
-            # Let's stick to the current implementation for functionality and only lightly instrument if possible.
-            # If I can't easily get it, I'll skip detailed token counting for the graders to avoid breaking them.
+            # Let's stick to the current implementation for functionality and only lightly
+            # instrument if possible.
+            # If I can't easily get it, I'll skip detailed token counting for the graders to avoid
+            # breaking them.
             # Wait, I CAN simple wrap the llm invocation?
 
-            # Let's skip token counting for Grader/Checker for now to avoid breaking the structured output logic
-            # unless I am sure.
-            # Actually, I can use `bind_tools` or similar, but let's just leave it for now to avoid bugs.
+            # Let's skip token counting for Grader/Checker for now to avoid breaking the structured
+            # output logic unless I am sure.
+            # Actually, I can use `bind_tools` or similar, but let's just leave it for now to avoid
+            # bugs.
             # I will only instrument QueryRewriter and Generator which are text-to-text.
 
             result = self.chain.invoke({"document": document.page_content, "question": question})

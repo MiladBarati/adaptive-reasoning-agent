@@ -125,9 +125,12 @@ def rewrite_query(state: RAGState) -> RAGState:
         # Record token usage (QueryRewriter uses an internal chain/LLM invoke)
         # Note: QueryRewriter class needs to return or expose response metadata to capture tokens.
         # Assuming for now we might miss this or need to update QueryRewriter.
-        # Let's inspect QueryRewriter in a separate step or assume we can't get it easily without refactoring QueryRewriter.
-        # Actually, let's keep it simple for now and only instrument the direct LLM calls or if QueryRewriter exposes it.
-        # Checking QueryRewriter code is needed. For now, I'll allow it to be missed in this pass if it's encapsulated.
+        # Let's inspect QueryRewriter in a separate step or assume we can't get it easily without
+        # refactoring QueryRewriter.
+        # Actually, let's keep it simple for now and only instrument the direct LLM calls or if
+        # QueryRewriter exposes it.
+        # Checking QueryRewriter code is needed. For now, I'll allow it to be missed in this pass if
+        # it's encapsulated.
 
         logger.debug(f"Original query: {question}")
         logger.info(f"Rewritten query: {rewritten_question}")
@@ -282,7 +285,8 @@ def generate_answer(state: RAGState) -> RAGState:
         prompt | llm | StrOutputParser()
 
         # We need to access the raw response to get metadata.
-        # StrOutputParser strips it. We should invoke the LLM directly or use a chain that preserves it if we want tokens.
+        # StrOutputParser strips it. We should invoke the LLM directly or use a chain that
+        # preserves it if we want tokens.
         # Ideally, we bind the tool or use introspection.
         # However, ChatOllama returns a AIMessage which has usage_metadata.
         # But `chain.invoke` with StrOutputParser returns a string.

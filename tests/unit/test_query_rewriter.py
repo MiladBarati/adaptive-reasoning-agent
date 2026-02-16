@@ -63,7 +63,11 @@ class TestQueryRewriter:
         """Test generating multiple query variations."""
         mock_llm = MagicMock()
         mock_response = MagicMock()
-        mock_response.content = "1. What is machine learning?\n2. How does machine learning work?\n3. Explain machine learning"
+        mock_response.content = (
+            "1. What is machine learning?\n"
+            "2. How does machine learning work?\n"
+            "3. Explain machine learning"
+        )
         mock_llm.invoke.return_value = mock_response
         mock_groq.return_value = mock_llm
 

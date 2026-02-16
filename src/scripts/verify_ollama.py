@@ -29,7 +29,8 @@ def verify_ollama():
         except Exception as e:
             print(f"Structured output failed: {e}")
             print(
-                "Note: This might be expected if the model or library version has issues with structured output, but basic generation should work."
+                "Note: This might be expected if the model or library version has issues with "
+                "structured output, but basic generation should work."
             )
 
         return True
