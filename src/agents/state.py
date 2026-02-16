@@ -19,4 +19,5 @@ class RAGState(TypedDict):
     workflow_steps: List[str]  # Log of workflow steps taken
     is_grounded: bool  # Whether the answer is grounded in documents
     is_answer_good: bool  # Whether the answer is good
+    cache_hit: bool  # Whether the answer came from cache
 
