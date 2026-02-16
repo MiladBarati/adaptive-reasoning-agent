@@ -12,6 +12,14 @@ from src.agents.state import RAGState
 class TestAgentNodes:
     """Test cases for agent nodes."""
     
+    @pytest.fixture(autouse=True)
+    def mock_tracer(self):
+        """Mock the tracer to avoid AttributeErrors."""
+        with patch('src.agents.nodes.tracer') as mock:
+            # Mock the context manager returned by start_as_current_span
+            mock_span = MagicMock()
+            mock.start_as_current_span.return_value.__enter__.return_value = mock_span
+            yield mock
     def test_initialize_components(self, vector_store_manager):
         """Test component initialization."""
         nodes.initialize_components(vector_store_manager)

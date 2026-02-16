@@ -2,7 +2,7 @@
 
 import pytest
 from fastapi.testclient import TestClient
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch, MagicMock, AsyncMock
 
 from src.api.main import app
 from src.core.vector_store import VectorStoreManager
@@ -44,7 +44,7 @@ class TestAPIEndpoints:
         assert "status" in data
         assert data["status"] == "healthy"
     
-    @patch('src.api.main.query_rag_agent')
+    @patch('src.api.main.async_query_rag_agent', new_callable=AsyncMock)
     def test_query_endpoint(self, mock_query, client, mock_vector_store_manager):
         """Test query endpoint."""
         mock_query.return_value = {

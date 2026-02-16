@@ -10,11 +10,11 @@ from src.corrective.answer_verifier import AnswerVerifier
 class TestAnswerVerifier:
     """Test cases for AnswerVerifier."""
     
-    @patch('src.corrective.answer_verifier.ChatGroq')
-    def test_initialization(self, mock_groq):
+    @patch('src.corrective.answer_verifier.ChatOllama')
+    def test_initialization(self, mock_ollama):
         """Test answer verifier initialization."""
         mock_llm = MagicMock()
-        mock_groq.return_value = mock_llm
+        mock_ollama.return_value = mock_llm
         
         verifier = AnswerVerifier()
         
@@ -22,14 +22,14 @@ class TestAnswerVerifier:
         assert verifier.prompt is not None
         assert verifier.chain is not None
     
-    @patch('src.corrective.answer_verifier.ChatGroq')
-    def test_verify_good_answer(self, mock_groq):
+    @patch('src.corrective.answer_verifier.ChatOllama')
+    def test_verify_good_answer(self, mock_ollama):
         """Test verifying a good answer."""
         mock_llm = MagicMock()
         mock_structured_output = Mock()
         mock_structured_output.binary_score = "yes"
         mock_llm.with_structured_output.return_value.invoke.return_value = mock_structured_output
-        mock_groq.return_value = mock_llm
+        mock_ollama.return_value = mock_llm
         
         verifier = AnswerVerifier()
         verifier.chain = Mock()
@@ -42,14 +42,14 @@ class TestAnswerVerifier:
         
         assert is_good is True
     
-    @patch('src.corrective.answer_verifier.ChatGroq')
-    def test_verify_bad_answer(self, mock_groq):
+    @patch('src.corrective.answer_verifier.ChatOllama')
+    def test_verify_bad_answer(self, mock_ollama):
         """Test verifying a bad answer."""
         mock_llm = MagicMock()
         mock_structured_output = Mock()
         mock_structured_output.binary_score = "no"
         mock_llm.with_structured_output.return_value.invoke.return_value = mock_structured_output
-        mock_groq.return_value = mock_llm
+        mock_ollama.return_value = mock_llm
         
         verifier = AnswerVerifier()
         verifier.chain = Mock()
@@ -62,12 +62,12 @@ class TestAnswerVerifier:
         
         assert is_good is False
     
-    @patch('src.corrective.answer_verifier.ChatGroq')
-    def test_verify_error_handling(self, mock_groq):
+    @patch('src.corrective.answer_verifier.ChatOllama')
+    def test_verify_error_handling(self, mock_ollama):
         """Test error handling in verification."""
         mock_llm = MagicMock()
         mock_llm.with_structured_output.return_value.invoke.side_effect = Exception("API Error")
-        mock_groq.return_value = mock_llm
+        mock_ollama.return_value = mock_llm
         
         verifier = AnswerVerifier()
         verifier.chain = Mock()
@@ -78,14 +78,14 @@ class TestAnswerVerifier:
         # Should default to accepting on error
         assert is_good is True
     
-    @patch('src.corrective.answer_verifier.ChatGroq')
-    def test_verify_with_feedback(self, mock_groq):
+    @patch('src.corrective.answer_verifier.ChatOllama')
+    def test_verify_with_feedback(self, mock_ollama):
         """Test verification with detailed feedback."""
         mock_llm = MagicMock()
         mock_response = MagicMock()
         mock_response.content = "Strengths: Clear and concise\nWeaknesses: None\nSuggestions: None\nVerdict: GOOD"
         mock_llm.invoke.return_value = mock_response
-        mock_groq.return_value = mock_llm
+        mock_ollama.return_value = mock_llm
         
         verifier = AnswerVerifier()
         verifier.llm = mock_llm
@@ -103,14 +103,14 @@ class TestAnswerVerifier:
             # If the method fails due to chain setup, at least verify the mock was called
             assert mock_llm.invoke.called or True  # Allow test to pass if method has issues
     
-    @patch('src.corrective.answer_verifier.ChatGroq')
-    def test_suggest_improvements(self, mock_groq):
+    @patch('src.corrective.answer_verifier.ChatOllama')
+    def test_suggest_improvements(self, mock_ollama):
         """Test getting improvement suggestions."""
         mock_llm = MagicMock()
         mock_response = MagicMock()
         mock_response.content = "1. Add more details\n2. Provide examples\n3. Explain applications"
         mock_llm.invoke.return_value = mock_response
-        mock_groq.return_value = mock_llm
+        mock_ollama.return_value = mock_llm
         
         verifier = AnswerVerifier()
         verifier.llm = mock_llm

@@ -2,7 +2,7 @@
 
 import pytest
 from fastapi.testclient import TestClient
-from unittest.mock import patch
+from unittest.mock import patch, AsyncMock
 
 from src.api.main import app
 from src.core.vector_store import VectorStoreManager
@@ -26,7 +26,7 @@ class TestAPIIntegration:
     
     @pytest.mark.slow
     @patch('src.api.main.vector_store_manager')
-    @patch('src.api.main.query_rag_agent')
+    @patch('src.api.main.async_query_rag_agent', new_callable=AsyncMock)
     def test_query_endpoint_integration(self, mock_query, mock_vsm, client):
         """Test query endpoint with full integration."""
         mock_query.return_value = {
