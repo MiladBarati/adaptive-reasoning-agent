@@ -1,6 +1,7 @@
 """Unit tests for embeddings module."""
 
 import pytest
+
 from src.core.embeddings import get_embeddings
 
 

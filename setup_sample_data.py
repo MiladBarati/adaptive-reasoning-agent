@@ -5,11 +5,12 @@ Run this script to populate the vector store with sample documents
 about machine learning, deep learning, NLP, RAG systems, and vector databases.
 """
 
-import os
 from pathlib import Path
+
 from dotenv import load_dotenv
-from src.core.vector_store import VectorStoreManager
+
 from src.core.logging_config import get_logger
+from src.core.vector_store import VectorStoreManager
 
 load_dotenv()
 

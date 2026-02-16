@@ -1,10 +1,11 @@
 """Unit tests for relevance grader module."""
 
+from unittest.mock import MagicMock, Mock, patch
+
 import pytest
-from unittest.mock import Mock, patch, MagicMock
 from langchain_core.documents import Document
 
-from src.corrective.relevance_grader import RelevanceGrader, GradeDocument
+from src.corrective.relevance_grader import RelevanceGrader
 
 
 @pytest.mark.unit

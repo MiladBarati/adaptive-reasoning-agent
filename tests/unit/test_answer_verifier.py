@@ -1,7 +1,8 @@
 """Unit tests for answer verifier module."""
 
+from unittest.mock import MagicMock, Mock, patch
+
 import pytest
-from unittest.mock import Mock, patch, MagicMock
 
 from src.corrective.answer_verifier import AnswerVerifier
 

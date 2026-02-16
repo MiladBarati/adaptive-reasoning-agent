@@ -13,24 +13,23 @@ Metrics:
 """
 
 import asyncio
-import time
 import json
-import statistics
 import os
-from datetime import datetime, timezone
-from pathlib import Path
-from typing import List, Dict, Any, Optional
+import statistics
+import time
+from typing import Any
 
-from langchain_ollama import ChatOllama
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.documents import Document
+from langchain_core.output_parsers import JsonOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_ollama import ChatOllama
 from pydantic import BaseModel, Field
+
+from src.agents.rag_graph import query_rag_agent
+from src.core.retriever import AdvancedRetriever
 
 # Import system components
 from src.core.vector_store import VectorStoreManager
-from src.core.retriever import AdvancedRetriever
-from src.agents.rag_graph import query_rag_agent
 
 # ---------------------------------------------------------------------------
 # DATASET
@@ -112,7 +111,7 @@ class Benchmarker:
                 Question: {question}
                 Answer: {answer}
 
-                Does the answer address the question? 
+                Does the answer address the question?
                 Give a score of 1 if it answers the question, 0 if it does not or says "I don't know" when it should know.
                 Provide reasoning.
 
@@ -141,7 +140,7 @@ class Benchmarker:
 
     # --- SYSTEMS ---
 
-    async def run_no_rag(self, question: str) -> Dict[str, Any]:
+    async def run_no_rag(self, question: str) -> dict[str, Any]:
         """Baseline: Direct LLM generation."""
         start = time.perf_counter()
 
@@ -154,7 +153,7 @@ class Benchmarker:
         latency = time.perf_counter() - start
         return {"answer": answer, "latency": latency, "context": ""}
 
-    async def run_regular_rag(self, question: str) -> Dict[str, Any]:
+    async def run_regular_rag(self, question: str) -> dict[str, Any]:
         """Baseline: Retrieve -> Generate (No corrections)."""
         start = time.perf_counter()
 
@@ -178,7 +177,7 @@ class Benchmarker:
         latency = time.perf_counter() - start
         return {"answer": answer, "latency": latency, "context": context}
 
-    async def run_corrective_rag(self, question: str) -> Dict[str, Any]:
+    async def run_corrective_rag(self, question: str) -> dict[str, Any]:
         """Target: Full Corrective RAG Agent."""
         start = time.perf_counter()
 
@@ -201,7 +200,7 @@ class Benchmarker:
 
     # --- EVALUATION ---
 
-    async def evaluate_answer(self, question: str, answer: str, context: str) -> Dict[str, Any]:
+    async def evaluate_answer(self, question: str, answer: str, context: str) -> dict[str, Any]:
         """Grade the answer for relevance and groundedness."""
 
         # Grade Relevance

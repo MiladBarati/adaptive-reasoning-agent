@@ -1,7 +1,8 @@
 """Unit tests for hallucination checker module."""
 
+from unittest.mock import MagicMock, Mock, patch
+
 import pytest
-from unittest.mock import Mock, patch, MagicMock
 from langchain_core.documents import Document
 
 from src.corrective.hallucination_checker import HallucinationChecker

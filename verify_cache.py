@@ -1,5 +1,6 @@
 import asyncio
 import time
+
 from src.agents.rag_graph import async_query_rag_agent
 
 

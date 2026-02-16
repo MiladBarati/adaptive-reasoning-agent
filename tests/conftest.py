@@ -1,18 +1,15 @@
 """Shared fixtures and configuration for pytest tests."""
 
-import os
-import pytest
-import tempfile
 import shutil
+import tempfile
+from collections.abc import Generator
 from pathlib import Path
-from unittest.mock import Mock, MagicMock, patch
-from typing import Generator
+from unittest.mock import Mock, patch
 
+import pytest
 from langchain_core.documents import Document
-from langchain_core.messages import AIMessage
 
 from src.core.vector_store import VectorStoreManager
-from src.core.embeddings import get_embeddings
 
 
 @pytest.fixture(scope="session")

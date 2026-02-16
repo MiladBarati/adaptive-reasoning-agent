@@ -1,7 +1,8 @@
 """Unit tests for query rewriter module."""
 
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import Mock, patch, MagicMock
 
 from src.corrective.query_rewriter import QueryRewriter
 

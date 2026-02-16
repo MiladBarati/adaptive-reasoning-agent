@@ -1,11 +1,11 @@
 """Unit tests for agent nodes module."""
 
+from unittest.mock import MagicMock, Mock, patch
+
 import pytest
-from unittest.mock import Mock, patch, MagicMock
 from langchain_core.documents import Document
 
 from src.agents import nodes
-from src.agents.state import RAGState
 
 
 @pytest.mark.unit

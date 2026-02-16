@@ -21,9 +21,9 @@ import json
 import os
 import statistics
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 import httpx
 
@@ -48,7 +48,7 @@ QUERY_PAYLOAD = {
 # ---------------------------------------------------------------------------
 
 
-def _stats(times: List[float]) -> Dict[str, float]:
+def _stats(times: list[float]) -> dict[str, float]:
     """Return p50 / p95 / p99 / mean for a list of durations (seconds)."""
     if not times:
         return {"p50": 0, "p95": 0, "p99": 0, "mean": 0, "min": 0, "max": 0}
@@ -85,15 +85,15 @@ async def _timed_post(client: httpx.AsyncClient, url: str, payload: dict) -> flo
 # ---------------------------------------------------------------------------
 
 
-async def bench_health(client: httpx.AsyncClient, base_url: str) -> Dict[str, Any]:
+async def bench_health(client: httpx.AsyncClient, base_url: str) -> dict[str, Any]:
     """Measure /health latency as a control (should be unaffected)."""
     times = [await _timed_get(client, f"{base_url}/health") for _ in range(HEALTH_ROUNDS)]
     return _stats(times)
 
 
-async def bench_query(client: httpx.AsyncClient, base_url: str) -> Dict[str, Any]:
+async def bench_query(client: httpx.AsyncClient, base_url: str) -> dict[str, Any]:
     """Measure end-to-end /query latency."""
-    times: List[float] = []
+    times: list[float] = []
     for i in range(QUERY_ROUNDS):
         try:
             t = await _timed_post(client, f"{base_url}/query", QUERY_PAYLOAD)
@@ -192,7 +192,7 @@ async def run_benchmark(tag: str, base_url: str) -> None:
 
     report = {
         "tag": tag,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "base_url": base_url,
         "query_rounds": QUERY_ROUNDS,
         "health_rounds": HEALTH_ROUNDS,

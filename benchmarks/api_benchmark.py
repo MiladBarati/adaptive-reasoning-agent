@@ -14,9 +14,9 @@ import json
 import os
 import statistics
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 import httpx
 
@@ -46,7 +46,7 @@ QUERY_PAYLOAD = {
 # ---------------------------------------------------------------------------
 
 
-def _stats(times: List[float]) -> Dict[str, float]:
+def _stats(times: list[float]) -> dict[str, float]:
     """Return p50 / p95 / p99 / mean for a list of durations (seconds)."""
     if not times:
         return {"p50": 0, "p95": 0, "p99": 0, "mean": 0, "min": 0, "max": 0}
@@ -83,9 +83,9 @@ async def _timed_post(client: httpx.AsyncClient, url: str, payload: dict) -> flo
 # ---------------------------------------------------------------------------
 
 
-async def bench_single_request_latency(client: httpx.AsyncClient, base_url: str) -> Dict[str, Any]:
+async def bench_single_request_latency(client: httpx.AsyncClient, base_url: str) -> dict[str, Any]:
     """Measure latency of individual endpoints sequentially."""
-    results: Dict[str, Any] = {}
+    results: dict[str, Any] = {}
 
     # /health
     times = [await _timed_get(client, f"{base_url}/health") for _ in range(LATENCY_ROUNDS)]
@@ -113,9 +113,9 @@ async def bench_single_request_latency(client: httpx.AsyncClient, base_url: str)
     return results
 
 
-async def bench_concurrent_throughput(client: httpx.AsyncClient, base_url: str) -> Dict[str, Any]:
+async def bench_concurrent_throughput(client: httpx.AsyncClient, base_url: str) -> dict[str, Any]:
     """Fire N concurrent /health requests and measure total throughput."""
-    results: Dict[str, Any] = {}
+    results: dict[str, Any] = {}
 
     for n in CONCURRENCY_LEVELS:
         start = time.perf_counter()
@@ -133,12 +133,12 @@ async def bench_concurrent_throughput(client: httpx.AsyncClient, base_url: str) 
 
 async def bench_event_loop_responsiveness(
     client: httpx.AsyncClient, base_url: str
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Start a /query request (slow) and simultaneously ping /health (fast).
     If the event loop is blocked, /health latency will spike.
     """
-    results: Dict[str, Any] = {}
+    results: dict[str, Any] = {}
 
     # Baseline health latency (no load)
     baseline_times = [await _timed_get(client, f"{base_url}/health") for _ in range(3)]
@@ -204,7 +204,7 @@ async def run_benchmark(tag: str, base_url: str) -> None:
 
     report = {
         "tag": tag,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "base_url": base_url,
         "latency_rounds": LATENCY_ROUNDS,
         "concurrency_levels": CONCURRENCY_LEVELS,
@@ -222,7 +222,7 @@ async def run_benchmark(tag: str, base_url: str) -> None:
     print(f"\n✅  Results saved to {out_path}\n")
 
 
-def _print_section(title: str, data: Dict[str, Any]) -> None:
+def _print_section(title: str, data: dict[str, Any]) -> None:
     print(f"\n  --- {title} ---")
     for key, val in data.items():
         if isinstance(val, dict):

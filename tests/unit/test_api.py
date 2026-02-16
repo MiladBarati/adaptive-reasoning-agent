@@ -1,11 +1,11 @@
 """Unit tests for API endpoints."""
 
+from unittest.mock import AsyncMock, Mock, patch
+
 import pytest
 from fastapi.testclient import TestClient
-from unittest.mock import Mock, patch, MagicMock, AsyncMock
 
 from src.api.main import app
-from src.core.vector_store import VectorStoreManager
 
 
 @pytest.fixture

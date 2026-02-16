@@ -1,11 +1,11 @@
 """Unit tests for retriever module."""
 
+from unittest.mock import MagicMock, Mock, patch
+
 import pytest
-from unittest.mock import Mock, patch, MagicMock
 from langchain_core.documents import Document
 
 from src.core.retriever import AdvancedRetriever
-from src.core.vector_store import VectorStoreManager
 
 
 @pytest.mark.unit
