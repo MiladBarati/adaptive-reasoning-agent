@@ -9,10 +9,12 @@ from dotenv import load_dotenv
 
 from src.core.vector_store import VectorStoreManager
 from src.core.logging_config import get_logger
+from src.core.telemetry import get_tracer
 
 load_dotenv()
 
 logger = get_logger(__name__)
+tracer = get_tracer(__name__)
 
 
 class AdvancedRetriever:
@@ -52,12 +54,20 @@ class AdvancedRetriever:
         Returns:
             List of relevant documents
         """
-        if self.use_multi_query:
-            return self._multi_query_retrieve(query, filter)
-        else:
-            return self.vector_store_manager.similarity_search(
-                query, k=self.k, filter=filter
-            )
+        with tracer.start_as_current_span("retriever.retrieve") as span:
+            span.set_attribute("retriever.query", query[:200])
+            span.set_attribute("retriever.k", self.k)
+            span.set_attribute("retriever.multi_query", self.use_multi_query)
+            
+            if self.use_multi_query:
+                docs = self._multi_query_retrieve(query, filter)
+            else:
+                docs = self.vector_store_manager.similarity_search(
+                    query, k=self.k, filter=filter
+                )
+            
+            span.set_attribute("retriever.doc_count", len(docs))
+            return docs
     
     def _multi_query_retrieve(
         self,

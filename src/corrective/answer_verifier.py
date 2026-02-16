@@ -1,7 +1,7 @@
 """Answer quality verification."""
 
 from typing import Tuple
-from langchain_groq import ChatGroq
+from langchain_ollama import ChatOllama
 from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
@@ -24,15 +24,15 @@ class GradeAnswer(BaseModel):
 class AnswerVerifier:
     """Verifies that generated answers properly address the user's question."""
     
-    def __init__(self, model: str = "llama-3.3-70b-versatile", temperature: float = 0) -> None:
+    def __init__(self, model: str = "qwen2.5:14b", temperature: float = 0) -> None:
         """
         Initialize the answer verifier.
         
         Args:
-            model: Groq model name
+            model: Ollama model name
             temperature: LLM temperature for generation
         """
-        self.llm = ChatGroq(model=model, temperature=temperature)
+        self.llm = ChatOllama(model=model, temperature=temperature)
         
         self.prompt = ChatPromptTemplate.from_template(
             """You are a grader assessing whether an answer addresses / resolves a question.

@@ -1,7 +1,7 @@
 """Query rewriting for improved retrieval."""
 
 from typing import List
-from langchain_groq import ChatGroq
+from langchain_ollama import ChatOllama
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from dotenv import load_dotenv
@@ -11,20 +11,28 @@ from src.core.logging_config import get_logger
 load_dotenv()
 
 logger = get_logger(__name__)
+from src.core.telemetry import get_meter
+
+meter = get_meter(__name__)
+token_usage_counter = meter.create_counter(
+    "rag.llm.tokens",
+    description="Number of tokens used by LLM",
+    unit="1",
+)
 
 
 class QueryRewriter:
     """Rewrites user queries to improve retrieval quality."""
     
-    def __init__(self, model: str = "llama-3.3-70b-versatile", temperature: float = 0) -> None:
+    def __init__(self, model: str = "qwen2.5:14b", temperature: float = 0) -> None:
         """
         Initialize the query rewriter.
         
         Args:
-            model: Groq model name
+            model: Ollama model name
             temperature: LLM temperature for generation
         """
-        self.llm = ChatGroq(model=model, temperature=temperature)
+        self.llm = ChatOllama(model=model, temperature=temperature)
         self.prompt = ChatPromptTemplate.from_template(
             """You are an expert at reformulating search queries to improve document retrieval.
             
@@ -42,7 +50,7 @@ class QueryRewriter:
             
             Rewritten question:"""
         )
-        self.chain = self.prompt | self.llm | StrOutputParser()
+        # self.chain = self.prompt | self.llm | StrOutputParser() # Decomposing for metrics
     
     def rewrite(self, question: str) -> str:
         """
@@ -55,7 +63,18 @@ class QueryRewriter:
             Rewritten question
         """
         try:
-            rewritten = self.chain.invoke({"question": question})
+            # We need to access the raw response to get metadata.
+            # Convert chain to not use StrOutputParser implicitly or break it down
+            msg = self.prompt.invoke({"question": question})
+            response = self.llm.invoke(msg)
+            rewritten = response.content
+
+            if response.usage_metadata:
+                input_tokens = response.usage_metadata.get("input_tokens", 0)
+                output_tokens = response.usage_metadata.get("output_tokens", 0)
+                token_usage_counter.add(input_tokens, {"type": "input", "model": self.llm.model})
+                token_usage_counter.add(output_tokens, {"type": "output", "model": self.llm.model})
+
             return rewritten.strip()
         except Exception as e:
             logger.error(f"Error rewriting query: {e}", exc_info=True)

@@ -1,7 +1,7 @@
 """Hallucination detection for generated answers."""
 
 from typing import List, Tuple
-from langchain_groq import ChatGroq
+from langchain_ollama import ChatOllama
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.documents import Document
 from pydantic import BaseModel, Field
@@ -25,15 +25,15 @@ class GradeHallucination(BaseModel):
 class HallucinationChecker:
     """Checks if generated answers are grounded in retrieved documents."""
     
-    def __init__(self, model: str = "llama-3.3-70b-versatile", temperature: float = 0) -> None:
+    def __init__(self, model: str = "qwen2.5:14b", temperature: float = 0) -> None:
         """
         Initialize the hallucination checker.
         
         Args:
-            model: Groq model name
+            model: Ollama model name
             temperature: LLM temperature for generation
         """
-        self.llm = ChatGroq(model=model, temperature=temperature)
+        self.llm = ChatOllama(model=model, temperature=temperature)
         
         self.prompt = ChatPromptTemplate.from_template(
             """You are a grader assessing whether an answer is grounded in / supported by 
