@@ -1,14 +1,14 @@
 """FastAPI backend for the Corrective & Adaptive RAG Agent."""
 
 import asyncio
-from contextlib import asynccontextmanager
-from typing import AsyncGenerator, Any, Dict, List, Optional
-
 import json
 import os
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
+from typing import Any
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
@@ -17,16 +17,16 @@ from src.agents.rag_graph import (
     async_query_rag_agent,
     create_rag_graph,
 )
-from src.core.vector_store import VectorStoreManager
 from src.core.logging_config import get_logger
 from src.core.telemetry import setup_telemetry
+from src.core.vector_store import VectorStoreManager
 
 load_dotenv()
 
 logger = get_logger(__name__)
 
 # Global vector store manager
-vector_store_manager: Optional[VectorStoreManager] = None
+vector_store_manager: VectorStoreManager | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -113,7 +113,7 @@ class QueryResponse(BaseModel):
     answer: str = Field(..., description="Generated answer")
     question: str = Field(..., description="Original question")
     rewritten_question: str = Field("", description="Rewritten question")
-    workflow_steps: List[str] = Field([], description="List of workflow steps taken")
+    workflow_steps: list[str] = Field([], description="List of workflow steps taken")
     iterations: int = Field(0, description="Number of iterations performed")
     relevant_docs_count: int = Field(0, description="Number of relevant documents found")
     web_search_used: bool = Field(False, description="Whether web search was used")
@@ -122,8 +122,8 @@ class QueryResponse(BaseModel):
 class IngestRequest(BaseModel):
     """Request model for text ingestion."""
 
-    texts: List[str] = Field(..., description="List of texts to ingest")
-    metadatas: Optional[List[Dict[str, Any]]] = Field(
+    texts: list[str] = Field(..., description="List of texts to ingest")
+    metadatas: list[dict[str, Any]] | None = Field(
         None, description="Optional metadata for each text"
     )
     chunk_size: int = Field(1000, description="Size of text chunks", ge=100, le=5000)
@@ -135,7 +135,7 @@ class IngestResponse(BaseModel):
 
     message: str = Field(..., description="Status message")
     document_count: int = Field(..., description="Number of documents ingested")
-    ids: List[str] = Field([], description="Document IDs")
+    ids: list[str] = Field([], description="Document IDs")
 
 
 class StatsResponse(BaseModel):
@@ -151,7 +151,7 @@ class StatsResponse(BaseModel):
 
 
 @app.get("/", tags=["Root"])
-async def root() -> Dict[str, str]:
+async def root() -> dict[str, str]:
     """Root endpoint."""
     return {
         "message": "Corrective & Adaptive RAG Agent API",
@@ -161,7 +161,7 @@ async def root() -> Dict[str, str]:
 
 
 @app.get("/health", tags=["Health"])
-async def health_check() -> Dict[str, str]:
+async def health_check() -> dict[str, str]:
     """Health check endpoint."""
     return {
         "status": "healthy",
@@ -226,7 +226,7 @@ async def query_stream(request: QueryRequest) -> StreamingResponse:
             app_graph = create_rag_graph(vector_store_manager=vector_store_manager)
 
             # Initialize state
-            initial_state: Dict[str, Any] = {
+            initial_state: dict[str, Any] = {
                 "question": request.question,
                 "rewritten_question": "",
                 "documents": [],
@@ -243,20 +243,20 @@ async def query_stream(request: QueryRequest) -> StreamingResponse:
 
             # Offload the synchronous stream() to a thread and
             # collect all state updates.
-            def _run_stream() -> list[Dict[str, Any]]:
+            def _run_stream() -> list[dict[str, Any]]:
                 return list(app_graph.stream(initial_state))
 
             state_updates = await asyncio.to_thread(_run_stream)
 
             # Now yield SSE events from the collected updates
-            final_state: Dict[str, Any] = initial_state
+            final_state: dict[str, Any] = initial_state
             for state_update in state_updates:
                 if state_update:
                     node_name = list(state_update.keys())[-1]
                     state = state_update[node_name]
                     final_state = state
 
-                    event_data: Dict[str, Any] = {
+                    event_data: dict[str, Any] = {
                         "type": "state_update",
                         "data": {
                             "workflow_steps": state.get("workflow_steps", []),
@@ -267,7 +267,7 @@ async def query_stream(request: QueryRequest) -> StreamingResponse:
                     await asyncio.sleep(0.01)
 
             # Send final answer
-            final_event: Dict[str, Any] = {
+            final_event: dict[str, Any] = {
                 "type": "final_answer",
                 "data": {
                     "answer": final_state.get("generation", ""),
@@ -281,7 +281,7 @@ async def query_stream(request: QueryRequest) -> StreamingResponse:
             yield f"data: {json.dumps(final_event)}\n\n"
 
         except Exception as e:
-            error_event: Dict[str, Any] = {
+            error_event: dict[str, Any] = {
                 "type": "error",
                 "data": {"message": str(e)},
             }
@@ -328,7 +328,7 @@ async def ingest_text(request: IngestRequest) -> IngestResponse:
 
 @app.post("/ingest/files", response_model=IngestResponse, tags=["Ingestion"])
 async def ingest_files(
-    files: List[UploadFile] = File(...),
+    files: list[UploadFile] = File(...),
     chunk_size: int = 1000,
     chunk_overlap: int = 200,
 ) -> IngestResponse:
@@ -404,7 +404,7 @@ async def get_stats() -> StatsResponse:
 
 
 @app.delete("/clear", tags=["Admin"])
-async def clear_vector_store() -> Dict[str, str]:
+async def clear_vector_store() -> dict[str, str]:
     """
     Clear all documents from the vector store.
 

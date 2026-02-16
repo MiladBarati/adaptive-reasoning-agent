@@ -1,24 +1,22 @@
 """Node implementations for the RAG agent graph."""
 
-from typing import List, Optional, Dict, Any
-from langchain_ollama import ChatOllama
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
-from langchain_core.documents import Document
 from dotenv import load_dotenv
+from langchain_core.documents import Document
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_ollama import ChatOllama
 from opentelemetry import trace
 
 from src.agents.state import RAGState
-from src.core.vector_store import VectorStoreManager
-from src.core.semantic_cache import SemanticCache
+from src.core.logging_config import get_logger
 from src.core.retriever import AdvancedRetriever
+from src.core.semantic_cache import SemanticCache
+from src.core.telemetry import get_meter, get_tracer
+from src.core.vector_store import VectorStoreManager
+from src.corrective.answer_verifier import AnswerVerifier
+from src.corrective.hallucination_checker import HallucinationChecker
 from src.corrective.query_rewriter import QueryRewriter
 from src.corrective.relevance_grader import RelevanceGrader
-from src.corrective.hallucination_checker import HallucinationChecker
-from src.corrective.answer_verifier import AnswerVerifier
-from src.core.logging_config import get_logger
-from src.core.logging_config import get_logger
-from src.core.telemetry import get_tracer, get_meter
 
 load_dotenv()
 
@@ -45,14 +43,14 @@ token_usage_counter = meter.create_counter(
 )
 
 # Initialize components (these will be set by the graph)
-vector_store_manager: Optional[VectorStoreManager] = None
-semantic_cache: Optional[SemanticCache] = None
-retriever: Optional[AdvancedRetriever] = None
-query_rewriter: Optional[QueryRewriter] = None
-relevance_grader: Optional[RelevanceGrader] = None
-hallucination_checker: Optional[HallucinationChecker] = None
-answer_verifier: Optional[AnswerVerifier] = None
-llm: Optional[ChatOllama] = None
+vector_store_manager: VectorStoreManager | None = None
+semantic_cache: SemanticCache | None = None
+retriever: AdvancedRetriever | None = None
+query_rewriter: QueryRewriter | None = None
+relevance_grader: RelevanceGrader | None = None
+hallucination_checker: HallucinationChecker | None = None
+answer_verifier: AnswerVerifier | None = None
+llm: ChatOllama | None = None
 
 
 def initialize_components(vsm: VectorStoreManager) -> None:
@@ -212,8 +210,9 @@ def web_search(state: RAGState) -> RAGState:
         span.set_attribute("rag.question", question[:200])
 
         try:
-            from tavily import TavilyClient
             import os
+
+            from tavily import TavilyClient
 
             tavily_client = TavilyClient(api_key=os.getenv("TAVILY_API_KEY"))
             response = tavily_client.search(query=question, max_results=3)

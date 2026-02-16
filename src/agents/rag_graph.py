@@ -1,21 +1,21 @@
 """LangGraph workflow for the Corrective & Adaptive RAG Agent."""
 
 import asyncio
+from typing import Any
 
-from langgraph.graph import StateGraph, END
+from langgraph.graph import END, StateGraph
 from langgraph.graph.state import CompiledStateGraph
-from typing import Optional, Dict, Any
 
-from src.agents.state import RAGState
 from src.agents import nodes
-from src.core.vector_store import VectorStoreManager
+from src.agents.state import RAGState
 from src.core.logging_config import get_logger
+from src.core.vector_store import VectorStoreManager
 
 logger = get_logger(__name__)
 
 
 def create_rag_graph(
-    vector_store_manager: Optional[VectorStoreManager] = None,
+    vector_store_manager: VectorStoreManager | None = None,
     persist_directory: str = "./chroma_db",
 ) -> CompiledStateGraph:
     """
@@ -97,9 +97,9 @@ def create_rag_graph(
 def query_rag_agent(
     question: str,
     max_iterations: int = 3,
-    vector_store_manager: Optional[VectorStoreManager] = None,
+    vector_store_manager: VectorStoreManager | None = None,
     persist_directory: str = "./chroma_db",
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Query the RAG agent with a question.
 
@@ -116,7 +116,7 @@ def query_rag_agent(
     app = create_rag_graph(vector_store_manager, persist_directory)
 
     # Initialize state
-    initial_state: Dict[str, Any] = {
+    initial_state: dict[str, Any] = {
         "question": question,
         "rewritten_question": "",
         "documents": [],
@@ -141,9 +141,9 @@ def query_rag_agent(
 async def async_query_rag_agent(
     question: str,
     max_iterations: int = 3,
-    vector_store_manager: Optional[VectorStoreManager] = None,
+    vector_store_manager: VectorStoreManager | None = None,
     persist_directory: str = "./chroma_db",
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Async wrapper for query_rag_agent.
 
@@ -170,7 +170,6 @@ async def async_query_rag_agent(
 
 if __name__ == "__main__":
     # Example usage
-    import os
     from dotenv import load_dotenv
 
     load_dotenv()
