@@ -56,3 +56,7 @@ htmlcov/
 .DS_Store
 Thumbs.db
 
+
+# Temporary files
+pytest_output*.txt
+commit_msg.txt
