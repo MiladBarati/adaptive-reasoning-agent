@@ -147,10 +147,12 @@ def compare_results(pre_path: Path, post_path: Path) -> None:
 
         print(f"\n  --- {section.upper()} ---")
         print(
-            f"    Pre-OTel  mean: {pre_mean:.4f}s  (p50={pre_data.get('p50', 0):.4f}s, p95={pre_data.get('p95', 0):.4f}s)"
+            f"    Pre-OTel  mean: {pre_mean:.4f}s "
+            f"(p50={pre_data.get('p50', 0):.4f}s, p95={pre_data.get('p95', 0):.4f}s)"
         )
         print(
-            f"    Post-OTel mean: {post_mean:.4f}s  (p50={post_data.get('p50', 0):.4f}s, p95={post_data.get('p95', 0):.4f}s)"
+            f"    Post-OTel mean: {post_mean:.4f}s "
+            f"(p50={post_data.get('p50', 0):.4f}s, p95={post_data.get('p95', 0):.4f}s)"
         )
         print(f"    Overhead:       {overhead_pct:+.2f}%")
 
