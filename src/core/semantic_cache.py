@@ -102,7 +102,8 @@ class SemanticCache:
                         return None
                 else:
                     logger.debug(
-                        f"Cache MISS for query='{query}' (score={score:.4f} < {self.similarity_threshold})"
+                        f"Cache MISS for query='{query}' "
+                        f"(score={score:.4f} < {self.similarity_threshold})"
                     )
                     span.set_attribute("cache.hit", False)
                     return None

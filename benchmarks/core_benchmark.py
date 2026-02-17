@@ -112,7 +112,8 @@ class Benchmarker:
                 Answer: {answer}
 
                 Does the answer address the question?
-                Give a score of 1 if it answers the question, 0 if it does not or says "I don't know" when it should know.
+                Give a score of 1 if it answers the question, 0 if it does not or says "I don't
+                know" when it should know.
                 Provide reasoning.
 
                 {format_instructions}"""
@@ -123,7 +124,8 @@ class Benchmarker:
 
         self.groundedness_grader = (
             ChatPromptTemplate.from_template(
-                """You are a grader assessing if an answer is grounded in / supported by a set of facts.
+                """You are a grader assessing if an answer is grounded in / supported by a set of
+                facts.
 
                 Facts: {context}
                 Answer: {answer}
@@ -229,7 +231,10 @@ class Benchmarker:
                     {
                         "context": context,
                         "answer": answer,
-                        "format_instructions": "Return JSON with 'score' (int) and 'reasoning' (str).",
+                        "format_instructions": (
+                            "Return JSON with 'score' (int) and "
+                            "'reasoning' (str)."
+                        ),
                     }
                 )
                 ground_score = ground_grade["score"]
