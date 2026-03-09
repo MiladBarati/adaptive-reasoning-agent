@@ -13,7 +13,7 @@ from src.core.vector_store import VectorStoreManager
 
 
 @pytest.fixture(scope="session")
-def test_data_dir() -> Path:
+def test_data_dir() -> Generator[Path, None, None]:
     """Create a temporary directory for test data."""
     temp_dir = tempfile.mkdtemp()
     yield Path(temp_dir)
@@ -56,9 +56,7 @@ def sample_documents() -> list[Document]:
             metadata={"source": "test2", "topic": "deep_learning"},
         ),
         Document(
-            page_content=(
-                "Natural language processing helps computers understand human language."
-            ),
+            page_content=("Natural language processing helps computers understand human language."),
             metadata={"source": "test3", "topic": "nlp"},
         ),
     ]

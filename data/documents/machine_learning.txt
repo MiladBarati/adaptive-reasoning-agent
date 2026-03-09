@@ -77,4 +77,3 @@ The field continues to evolve rapidly with emerging trends:
 - Edge ML: Running ML models on edge devices like smartphones and IoT devices
 
 Machine learning continues to transform how we solve complex problems and make data-driven decisions across all industries.
-

@@ -261,7 +261,7 @@ Other options:
 **Solution**: Reduce chunk size or use smaller embedding model
 
 ### Issue: Slow responses
-**Solution**: 
+**Solution**:
 - Use faster Groq model (llama-3.1-8b-instant)
 - Reduce max_iterations
 - Reduce retrieval k value
@@ -293,4 +293,3 @@ Other options:
 - **For Cost**: Reduce iterations, cache common queries
 
 Enjoy your Corrective & Adaptive RAG Agent! 🚀
-

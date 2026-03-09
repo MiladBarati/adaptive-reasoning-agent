@@ -57,6 +57,7 @@ class VectorStoreManager:
         if not documents:
             return []
 
+        assert self.vector_store is not None
         ids = self.vector_store.add_documents(documents)
         logger.info(f"Added {len(documents)} documents to vector store")
         return ids
@@ -152,6 +153,7 @@ class VectorStoreManager:
         Returns:
             List of relevant documents
         """
+        assert self.vector_store is not None
         return self.vector_store.similarity_search(query, k=k, filter=filter)
 
     def get_retriever(self, k: int = 4) -> BaseRetriever:
@@ -164,6 +166,7 @@ class VectorStoreManager:
         Returns:
             VectorStoreRetriever
         """
+        assert self.vector_store is not None
         return self.vector_store.as_retriever(search_kwargs={"k": k})
 
     def clear(self) -> None:
@@ -185,6 +188,7 @@ class VectorStoreManager:
             Dictionary with vector store statistics
         """
         try:
+            assert self.vector_store is not None
             collection = self.vector_store._collection
             count = collection.count()
             return {"document_count": count, "persist_directory": self.persist_directory}

@@ -49,11 +49,11 @@ Similarity Metrics:
 1. Cosine Similarity: Measures angle between vectors (most common)
    - Range: -1 to 1 (1 = identical direction)
    - Ignores magnitude, focuses on direction
-   
+
 2. Euclidean Distance: Straight-line distance between points
    - Considers both direction and magnitude
    - Sensitive to vector length
-   
+
 3. Dot Product: Multiplication of corresponding components
    - Faster computation
    - Combines similarity and magnitude
@@ -323,4 +323,3 @@ The field is evolving rapidly:
 - Zero-copy operations for efficiency
 
 Vector databases have become critical infrastructure for AI applications, enabling semantic understanding at scale. As embedding models improve and datasets grow, vector databases will continue to evolve to meet increasing demands for speed, scale, and accuracy.
-

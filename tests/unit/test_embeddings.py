@@ -23,7 +23,7 @@ class TestEmbeddings:
         assert vector is not None
         assert isinstance(vector, list)
         assert len(vector) > 0
-        assert all(isinstance(x, (int, float)) for x in vector)
+        assert all(isinstance(x, int | float) for x in vector)
 
     def test_embeddings_consistency(self):
         """Test that same text produces same embedding."""

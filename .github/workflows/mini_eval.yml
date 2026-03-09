@@ -1,0 +1,52 @@
+name: Mini-Eval PR Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - main
+
+jobs:
+  mini-eval:
+    name: Run LLM Mini-Eval
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: ".python-version"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Install Dependencies
+        run: |
+          uv sync --all-extras --dev
+
+      - name: Install Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          # Start Ollama server in the background
+          ollama serve &
+          echo "Waiting for Ollama to start..."
+          sleep 5
+
+      - name: Pull LLM Model
+        # We use a smaller model in CI to avoid extremely slow action runs 
+        # while still testing the system logic end-to-end.
+        run: |
+          ollama pull qwen2.5:0.5b
+
+      - name: Run Mini-Eval
+        env:
+          LLM_MODEL: "qwen2.5:0.5b" # Override default model for CI
+          # TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }} # Uncomment if necessary for end-to-end agent eval
+        run: |
+          uv run pytest tests/eval/test_mini_eval.py -v --no-cov

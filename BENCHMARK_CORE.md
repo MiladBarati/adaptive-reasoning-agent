@@ -30,7 +30,7 @@ We benchmarked three configurations to quantify the value of the "Corrective RAG
 ### Question: "Who won the 2024 Super Bowl?"
 *   **No RAG:** Hallucinated an answer (e.g., "Kansas City Chiefs" based on old training data or random guess).
 *   **Regular RAG:** Retrieved irrelevant documents about Machine Learning and generated a confused answer or "I don't know".
-*   **Corrective RAG:** 
+*   **Corrective RAG:**
     1.  Retrieved local docs $\to$ Graded as **Irrelevant**.
     2.  Triggered **Web Search**.
     3.  Found correct info (Kansas City Chiefs).

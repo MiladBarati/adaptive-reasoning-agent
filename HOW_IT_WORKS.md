@@ -422,10 +422,10 @@ prompt = ChatPromptTemplate.from_template(
     Use the following pieces of retrieved context to answer the question.
     If you don't know the answer, say that you don't know.
     Use three sentences maximum and keep the answer concise.
-    
+
     Question: {question}
     Context: {context}
-    
+
     Answer:"""
 )
 
@@ -642,7 +642,7 @@ from langchain_core.documents import Document
 
 class RAGState(TypedDict):
     """State for the RAG agent workflow."""
-    
+
     question: str                   # Original user question
     rewritten_question: str         # Rewritten question for better retrieval
     documents: list[Document]       # Retrieved documents from vector store
@@ -821,7 +821,7 @@ cache.update_cache(
 )
 ```
 
-**Performance impact:** 
+**Performance impact:**
 - **Without cache:** ~12 seconds (full RAG pipeline)
 - **With cache hit:** ~0.1 seconds (vector search only)
 - **Speed-up:** 120× faster for repeat queries!
@@ -877,8 +877,8 @@ question = "How do I deploy a machine learning model to production?"
 
 # LLM rewrites for better retrieval
 rewritten = rewriter.rewrite(question)
-# Output: "Explain the process of deploying a machine learning model to 
-#          production, including containerization, API creation, monitoring, 
+# Output: "Explain the process of deploying a machine learning model to
+#          production, including containerization, API creation, monitoring,
 #          and scaling strategies"
 ```
 - **Workflow step added:** "Query rewritten"
@@ -1098,7 +1098,7 @@ cache_result = {
 - Result: High-quality, grounded, verified answer + cached
 
 **Second query (cache hit):**
-- Time: ~0.08 seconds 
+- Time: ~0.08 seconds
 - Steps: 1 (cache lookup only)
 - LLM calls: 0
 - Result: Same answer, 241× faster!
@@ -1109,12 +1109,12 @@ cache_result = {
 
 This system combines:
 
-✅ **Retrieval** - Finds relevant information from your documents  
-✅ **Augmentation** - Adds context to the AI's knowledge  
-✅ **Generation** - Creates coherent, readable answers  
-✅ **Correction** - Checks and retries to ensure quality  
-✅ **Caching** - Remembers answers for speed  
-✅ **Adaptability** - Falls back to web search when needed  
+✅ **Retrieval** - Finds relevant information from your documents
+✅ **Augmentation** - Adds context to the AI's knowledge
+✅ **Generation** - Creates coherent, readable answers
+✅ **Correction** - Checks and retries to ensure quality
+✅ **Caching** - Remembers answers for speed
+✅ **Adaptability** - Falls back to web search when needed
 
 The result? An AI assistant that:
 - Answers questions accurately based on YOUR documents

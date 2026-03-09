@@ -2,8 +2,8 @@
 
 Benchmark comparing the FastAPI backend **before** and **after** migrating to a proper async architecture using `asyncio.to_thread()`.
 
-**Date:** 2026-02-11  
-**Tool:** `benchmarks/api_benchmark.py`  
+**Date:** 2026-02-11
+**Tool:** `benchmarks/api_benchmark.py`
 **Server:** Uvicorn (single worker) on `127.0.0.1:8000`
 
 ---
@@ -19,7 +19,7 @@ The most critical metric — measures `/health` latency while a long-running `/q
 | `/health` under load (p95) | 9,936 ms | 2.52 ms | **3,943× faster** |
 | Responsiveness ratio | **2,305×** | **1.43×** | ✅ Unblocked |
 
-> **Before:** A single `/query` request blocked the event loop for ~10–30 seconds, making `/health` completely unresponsive (3.3s mean, 9.9s p95).  
+> **Before:** A single `/query` request blocked the event loop for ~10–30 seconds, making `/health` completely unresponsive (3.3s mean, 9.9s p95).
 > **After:** `/health` stays at ~2ms even while `/query` is processing — the event loop is free.
 
 ---

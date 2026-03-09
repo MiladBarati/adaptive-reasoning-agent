@@ -175,4 +175,3 @@ Monitor the workflow steps in the UI to see:
 - Answer verification results
 
 This demonstrates the corrective and adaptive nature of the RAG system!
-

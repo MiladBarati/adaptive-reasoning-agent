@@ -1,7 +1,8 @@
 """Node implementations for the RAG agent graph."""
 
+import os
+
 from dotenv import load_dotenv
-from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_ollama import ChatOllama
@@ -65,7 +66,25 @@ def initialize_components(vsm: VectorStoreManager) -> None:
     relevance_grader = RelevanceGrader()
     hallucination_checker = HallucinationChecker()
     answer_verifier = AnswerVerifier()
-    llm = ChatOllama(model="qwen2.5:14b", temperature=0.7)
+
+    mock_llm = os.getenv("MOCK_LLM", "false").lower() == "true"
+    if mock_llm:
+        import time
+
+        from langchain_core.language_models.fake import FakeListLLM
+
+        class SlowFakeLLM(FakeListLLM):
+            def _call(self, prompt: str, stop=None, run_manager=None, **kwargs):
+                time.sleep(1.0)  # Simulate network latency
+                return super()._call(prompt, stop, run_manager, **kwargs)
+
+        llm = SlowFakeLLM(
+            responses=["[MOCK] This is a mocked generated answer to simulate LLM load. " * 3]
+        )
+        logger.warning("Using MOCK LLM for generation!")
+    else:
+        model_name = os.getenv("LLM_MODEL", "qwen2.5:14b")
+        llm = ChatOllama(model=model_name, temperature=0.7)
 
 
 def check_cache(state: RAGState) -> RAGState:
@@ -83,6 +102,7 @@ def check_cache(state: RAGState) -> RAGState:
         question = state["question"]
         span.set_attribute("rag.question", question[:200])
 
+        assert semantic_cache is not None
         cache_result = semantic_cache.check_cache(question)
         # cache_result = None # FORCE MISS FOR BENCHMARK
 
@@ -120,7 +140,14 @@ def rewrite_query(state: RAGState) -> RAGState:
         question = state["question"]
         span.set_attribute("rag.question", question[:200])
 
-        rewritten_question = query_rewriter.rewrite(question)
+        import os
+
+        mock_llm = os.getenv("MOCK_LLM", "false").lower() == "true"
+        if mock_llm:
+            rewritten_question = question
+        else:
+            assert query_rewriter is not None
+            rewritten_question = query_rewriter.rewrite(question)
 
         # Record token usage (QueryRewriter uses an internal chain/LLM invoke)
         # Note: QueryRewriter class needs to return or expose response metadata to capture tokens.
@@ -156,6 +183,7 @@ def retrieve_documents(state: RAGState) -> RAGState:
         question = state.get("rewritten_question", state["question"])
         span.set_attribute("rag.question", question[:200])
 
+        assert retriever is not None
         documents = retriever.retrieve(question)
         logger.info(f"Retrieved {len(documents)} documents")
 
@@ -183,7 +211,16 @@ def grade_documents(state: RAGState) -> RAGState:
         span.set_attribute("rag.question", question[:200])
         span.set_attribute("rag.input_document_count", len(documents))
 
-        relevant_docs, irrelevant_docs = relevance_grader.grade_documents(documents, question)
+        import os
+        from typing import Any
+
+        mock_llm = os.getenv("MOCK_LLM", "false").lower() == "true"
+        if mock_llm:
+            relevant_docs = documents
+            irrelevant_docs: list[Any] = []
+        else:
+            assert relevance_grader is not None
+            relevant_docs, irrelevant_docs = relevance_grader.grade_documents(documents, question)
 
         state["documents"] = relevant_docs
         state["relevant_docs_count"] = len(relevant_docs)
@@ -215,23 +252,41 @@ def web_search(state: RAGState) -> RAGState:
         try:
             import os
 
-            from tavily import TavilyClient
+            from langchain_core.documents import Document
 
-            tavily_client = TavilyClient(api_key=os.getenv("TAVILY_API_KEY"))
-            response = tavily_client.search(query=question, max_results=3)
-
-            # Convert Tavily results to Documents
             web_docs = []
-            for result in response.get("results", []):
+            mock_llm = os.getenv("MOCK_LLM", "false").lower() == "true"
+
+            if mock_llm:
+                import time
+
+                time.sleep(1.0)  # simulate network latency
                 doc = Document(
-                    page_content=result.get("content", ""),
+                    page_content="[MOCK] This is a mocked web search result.",
                     metadata={
-                        "source": result.get("url", ""),
-                        "title": result.get("title", ""),
+                        "source": "https://example.com",
+                        "title": "Mocked Search Result",
                         "type": "web_search",
                     },
                 )
                 web_docs.append(doc)
+            else:
+                from tavily import TavilyClient
+
+                tavily_client = TavilyClient(api_key=os.getenv("TAVILY_API_KEY"))
+                response = tavily_client.search(query=question, max_results=3)
+
+                # Convert Tavily results to Documents
+                for result in response.get("results", []):
+                    doc = Document(
+                        page_content=result.get("content", ""),
+                        metadata={
+                            "source": result.get("url", ""),
+                            "title": result.get("title", ""),
+                            "type": "web_search",
+                        },
+                    )
+                    web_docs.append(doc)
 
             logger.info(f"Web search returned {len(web_docs)} results")
             state["web_search_results"] = web_docs
@@ -294,15 +349,21 @@ def generate_answer(state: RAGState) -> RAGState:
 
         # Refactoring to get token usage:
         msg = prompt.invoke({"question": question, "context": context})
+        assert llm is not None
         response = llm.invoke(msg)
-        generation = response.content
+
+        if isinstance(response, str):
+            generation = response
+        else:
+            generation = response.content
 
         # Record tokens
-        if response.usage_metadata:
+        if hasattr(response, "usage_metadata") and response.usage_metadata:
             input_tokens = response.usage_metadata.get("input_tokens", 0)
             output_tokens = response.usage_metadata.get("output_tokens", 0)
-            token_usage_counter.add(input_tokens, {"type": "input", "model": llm.model})
-            token_usage_counter.add(output_tokens, {"type": "output", "model": llm.model})
+            model_name = getattr(llm, "model", "mocked_model")
+            token_usage_counter.add(input_tokens, {"type": "input", "model": model_name})
+            token_usage_counter.add(output_tokens, {"type": "output", "model": model_name})
 
         logger.info(f"Generated answer: {generation[:100]}...")
         logger.debug(f"Full answer: {generation}")
@@ -328,7 +389,14 @@ def check_hallucination(state: RAGState) -> RAGState:
         documents = state["documents"]
         generation = state["generation"]
 
-        is_grounded = hallucination_checker.check(documents, generation)
+        import os
+
+        mock_llm = os.getenv("MOCK_LLM", "false").lower() == "true"
+        if mock_llm:
+            is_grounded = True
+        else:
+            assert hallucination_checker is not None
+            is_grounded = hallucination_checker.check(documents, generation)
 
         state["workflow_steps"].append(
             f"Hallucination check: {'grounded' if is_grounded else 'not grounded'}"
@@ -356,7 +424,14 @@ def verify_answer(state: RAGState) -> RAGState:
         question = state["question"]
         generation = state["generation"]
 
-        is_good = answer_verifier.verify(question, generation)
+        import os
+
+        mock_llm = os.getenv("MOCK_LLM", "false").lower() == "true"
+        if mock_llm:
+            is_good = True
+        else:
+            assert answer_verifier is not None
+            is_good = answer_verifier.verify(question, generation)
 
         state["workflow_steps"].append(
             f"Answer verification: {'passed' if is_good else 'needs improvement'}"
@@ -369,6 +444,7 @@ def verify_answer(state: RAGState) -> RAGState:
         # Update cache if answer is verified and good
         if is_good:
             try:
+                assert semantic_cache is not None
                 semantic_cache.update_cache(
                     query=question,
                     answer=generation,

@@ -13,9 +13,10 @@ class TestSchema(BaseModel):
 
 
 def verify_ollama():
-    print("Initializing ChatOllama with qwen2.5:14b...")
+    model_name = os.getenv("LLM_MODEL", "qwen2.5:14b")
+    print(f"Initializing ChatOllama with {model_name}...")
     try:
-        llm = ChatOllama(model="qwen2.5:14b", temperature=0)
+        llm = ChatOllama(model=model_name, temperature=0)
 
         print("\nTesting simple generation...")
         response = llm.invoke("Hello, are you working? Reply with 'Yes, I am working'.")

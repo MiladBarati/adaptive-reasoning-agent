@@ -232,8 +232,7 @@ class Benchmarker:
                         "context": context,
                         "answer": answer,
                         "format_instructions": (
-                            "Return JSON with 'score' (int) and "
-                            "'reasoning' (str)."
+                            "Return JSON with 'score' (int) and " "'reasoning' (str)."
                         ),
                     }
                 )

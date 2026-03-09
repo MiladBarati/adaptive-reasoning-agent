@@ -1,6 +1,5 @@
 """Query rewriting for improved retrieval."""
 
-
 from dotenv import load_dotenv
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
@@ -24,14 +23,18 @@ token_usage_counter = meter.create_counter(
 class QueryRewriter:
     """Rewrites user queries to improve retrieval quality."""
 
-    def __init__(self, model: str = "qwen2.5:14b", temperature: float = 0) -> None:
+    def __init__(self, model: str | None = None, temperature: float = 0) -> None:
         """
         Initialize the query rewriter.
 
         Args:
-            model: Ollama model name
+            model: Ollama model name (defaults to LLM_MODEL env var or qwen2.5:14b)
             temperature: LLM temperature for generation
         """
+        import os
+
+        if model is None:
+            model = os.getenv("LLM_MODEL", "qwen2.5:14b")
         self.llm = ChatOllama(model=model, temperature=temperature)
         self.prompt = ChatPromptTemplate.from_template(
             """You are an expert at reformulating search queries to improve document retrieval.

@@ -182,4 +182,3 @@ Emerging Trends:
 - Controllable Text Generation: Generating text with specific attributes
 
 The future of NLP promises more natural human-computer interaction, breaking down language barriers, and making information accessible to everyone regardless of language or literacy level.
-

@@ -155,22 +155,21 @@ from unittest.mock import Mock, patch
 @pytest.mark.unit
 class TestMyComponent:
     """Test cases for MyComponent."""
-    
+
     def test_basic_functionality(self):
         """Test basic functionality."""
         # Arrange
         component = MyComponent()
-        
+
         # Act
         result = component.do_something()
-        
+
         # Assert
         assert result is not None
-    
+
     @patch('module.external_dependency')
     def test_with_mock(self, mock_dependency):
         """Test with mocked dependency."""
         mock_dependency.return_value = "mocked"
         # ... test code
 ```
-

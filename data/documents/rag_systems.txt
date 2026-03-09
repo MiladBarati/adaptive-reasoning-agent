@@ -237,4 +237,3 @@ The field continues to evolve with emerging trends:
 - Adaptive Chunking: Dynamic chunk sizing based on content type
 
 RAG represents a significant advancement in making AI systems more reliable, accurate, and useful for real-world applications.
-

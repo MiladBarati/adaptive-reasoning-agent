@@ -29,9 +29,9 @@ async def test_cache():
         # Only assert if both succeeded
         if "result1" in locals() and "result2" in locals():
             assert duration2 < duration1, "Cache hit should be faster"
-            assert "Cache HIT" in str(result2["workflow_steps"]), (
-                "Second query should be a cache hit"
-            )
+            assert "Cache HIT" in str(
+                result2["workflow_steps"]
+            ), "Second query should be a cache hit"
     except Exception as e:
         print(f"Test 2 failed: {e}")
 

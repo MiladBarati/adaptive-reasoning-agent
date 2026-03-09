@@ -1,6 +1,5 @@
 """Document relevance grading."""
 
-
 from dotenv import load_dotenv
 from langchain_core.documents import Document
 from langchain_core.prompts import ChatPromptTemplate
@@ -31,14 +30,18 @@ class GradeDocument(BaseModel):
 class RelevanceGrader:
     """Grades retrieved documents for relevance to the query."""
 
-    def __init__(self, model: str = "qwen2.5:14b", temperature: float = 0) -> None:
+    def __init__(self, model: str | None = None, temperature: float = 0) -> None:
         """
         Initialize the relevance grader.
 
         Args:
-            model: Ollama model name
+            model: Ollama model name (defaults to LLM_MODEL env var or qwen2.5:14b)
             temperature: LLM temperature for generation
         """
+        import os
+
+        if model is None:
+            model = os.getenv("LLM_MODEL", "qwen2.5:14b")
         self.llm = ChatOllama(model=model, temperature=temperature)
 
         self.prompt = ChatPromptTemplate.from_template(

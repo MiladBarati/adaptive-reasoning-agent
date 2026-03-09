@@ -376,13 +376,13 @@ for doc in docs:
 
 ## Summary: Why This Retriever is Powerful
 
-✅ **Semantic understanding** - Finds meaning, not just keywords  
-✅ **Fast** - Only searches embeddings, no reading full documents  
-✅ **Scalable** - Works with thousands of documents  
-✅ **Accurate** - Returns top-k most relevant chunks  
-✅ **Persistent** - Embeddings saved to disk, no re-processing  
-✅ **Flexible** - Multi-query mode for better coverage  
-✅ **Configurable** - Adjust k, chunk size, overlap as needed  
+✅ **Semantic understanding** - Finds meaning, not just keywords
+✅ **Fast** - Only searches embeddings, no reading full documents
+✅ **Scalable** - Works with thousands of documents
+✅ **Accurate** - Returns top-k most relevant chunks
+✅ **Persistent** - Embeddings saved to disk, no re-processing
+✅ **Flexible** - Multi-query mode for better coverage
+✅ **Configurable** - Adjust k, chunk size, overlap as needed
 
 **The retriever is the foundation of the RAG system** - without good retrieval, the AI can't generate good answers!
 

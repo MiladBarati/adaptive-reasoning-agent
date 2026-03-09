@@ -432,10 +432,10 @@ rag_llm_tokens_total{type="output"}: 34779  (+217)
 
 ### **Insights from This Trace**
 
-✅ **Bottleneck identified:** Grading (3.22s) and generation (4.55s) are the slowest  
-✅ **Cache performance:** 0.72 similarity wasn't enough (threshold: 0.90)  
-✅ **Token efficiency:** Used 8,754 tokens total (reasonable for complex query)  
-✅ **Quality checks:** Both hallucination and verification passed  
+✅ **Bottleneck identified:** Grading (3.22s) and generation (4.55s) are the slowest
+✅ **Cache performance:** 0.72 similarity wasn't enough (threshold: 0.90)
+✅ **Token efficiency:** Used 8,754 tokens total (reasonable for complex query)
+✅ **Quality checks:** Both hallucination and verification passed
 
 **Optimization ideas:**
 - Parallelize document grading → Save ~2.5s
@@ -562,7 +562,7 @@ def setup_telemetry():
         processor = BatchSpanProcessor(ConsoleSpanExporter())
         provider.add_span_processor(processor)
         trace.set_tracer_provider(provider)
-        
+
         # Initialize Prometheus metrics
         reader = PrometheusMetricReader()
         meter_provider = MeterProvider(

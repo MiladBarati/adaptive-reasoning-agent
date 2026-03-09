@@ -24,6 +24,7 @@ class TestRAGState:
             "workflow_steps": [],
             "is_grounded": False,
             "is_answer_good": False,
+            "cache_hit": False,
         }
 
         assert state["question"] == "What is machine learning?"

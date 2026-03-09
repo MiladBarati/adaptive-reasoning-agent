@@ -104,11 +104,11 @@ async def bench_single_request_latency(client: httpx.AsyncClient, base_url: str)
         except httpx.HTTPStatusError:
             # If query fails (no docs, no API key, etc.) record -1
             times.append(-1)
-    results["query"] = (
-        _stats([t for t in times if t >= 0])
-        if any(t >= 0 for t in times)
-        else {"error": "all requests failed"}
-    )
+
+    if any(t >= 0 for t in times):
+        results["query"] = _stats([t for t in times if t >= 0])
+    else:
+        results["query"] = {"error": "all requests failed"}
 
     return results
 
