@@ -1,7 +1,6 @@
-import os
 import random
-import time
-from locust import HttpUser, task, between
+
+from locust import HttpUser, between, task
 
 # Sample questions for load testing
 QUESTIONS = [
@@ -16,6 +15,7 @@ QUESTIONS = [
     "What is OpenTelemetry used for here?",
 ]
 
+
 class RAGUser(HttpUser):
     # Wait between 1 and 5 seconds between tasks
     wait_time = between(1, 5)
@@ -27,12 +27,14 @@ class RAGUser(HttpUser):
         payload = {
             "question": question,
             "max_iterations": 2,  # Keep iterations low for load tests
-            "stream": False
+            "stream": False,
         }
-        
+
         # Test the endpoint. We group by endpoint name rather than the specific query
         # to get aggregated stats in locust.
-        with self.client.post("/query", json=payload, catch_response=True, name="/query") as response:
+        with self.client.post(
+            "/query", json=payload, catch_response=True, name="/query"
+        ) as response:
             if response.status_code == 200:
                 data = response.json()
                 if "answer" in data:
@@ -51,4 +53,3 @@ class RAGUser(HttpUser):
     def stats_endpoint(self):
         """Test the stats endpoint."""
         self.client.get("/stats", name="/stats")
-

@@ -39,7 +39,7 @@ jobs:
           sleep 5
 
       - name: Pull LLM Model
-        # We use a smaller model in CI to avoid extremely slow action runs 
+        # We use a smaller model in CI to avoid extremely slow action runs
         # while still testing the system logic end-to-end.
         run: |
           ollama pull qwen2.5:0.5b

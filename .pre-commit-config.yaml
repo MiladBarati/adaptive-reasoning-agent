@@ -7,16 +7,20 @@ repos:
     -   id: check-yaml
     -   id: check-added-large-files
 
--   repo: https://github.com/psf/black
-    rev: 24.2.0
-    hooks:
-    -   id: black
-
 -   repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.3.4
     hooks:
+    # Auto-fix most lint errors
     -   id: ruff
         args: [ --fix ]
+    # Manually address any remaining errors that cannot be fixed automatically
+    -   id: ruff
+
+-   repo: https://github.com/psf/black
+    rev: 24.2.0
+    hooks:
+    # Reformat with Black
+    -   id: black
 
 -   repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.9.0

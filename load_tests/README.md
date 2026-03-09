@@ -2,7 +2,7 @@
 
 This directory contains load tests for the Corrective RAG Agent to ensure performance, stability, and resiliency.
 
-We use **[Locust](https://locust.io/)** as our load testing framework. 
+We use **[Locust](https://locust.io/)** as our load testing framework.
 
 ## Testing Strategies
 
@@ -21,7 +21,7 @@ We achieve this by setting the `MOCK_LLM=true` environment variable, which repla
    ```bash
    # Run via web UI
    uv run locust -f load_tests/locustfile.py
-   
+
    # OR run headlessly for 1 minute:
    uv run locust -f load_tests/locustfile.py --headless -u 50 -r 5 -t 1m --host http://localhost:8000
    ```

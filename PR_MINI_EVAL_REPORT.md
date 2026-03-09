@@ -12,7 +12,7 @@ A new testing suite was added to specifically validate the agent's built-in self
 - **Vague Answer Detection:** Verifies that an answer lacking sufficient detail is appropriately flagged as needing improvement.
 
 ### 2. GitHub Actions Workflow (`.github/workflows/mini_eval.yml`)
-An automated CI pipeline was configured to execute this evaluation suite on all PRs targeting the `main` branch. 
+An automated CI pipeline was configured to execute this evaluation suite on all PRs targeting the `main` branch.
 
 **Workflow Execution Flow:**
 1. Checks out the repository.
@@ -21,11 +21,11 @@ An automated CI pipeline was configured to execute this evaluation suite on all 
 4. Pulls a lightweight LLM (`qwen2.5:0.5b`) to ensure the CI job finishes in seconds rather than minutes.
 5. Executes the test suite using `pytest`.
 
-**Note on Coverage:** 
+**Note on Coverage:**
 The `pytest` command in the GitHub Action is executed with the `--no-cov` flag (`uv run pytest tests/eval/test_mini_eval.py -v --no-cov`). This ensures that the small subset of integration tests does not artificially fail the workflow due to the global `pytest.ini` requirement of 60% system-wide code coverage.
 
-## Validation 
-The implementation was validated locally. The test suite correctly initialized the verifier, orchestrated the LLM calls via Ollama, and explicitly passed all three behavioral assertions in approximately 3-4 seconds. 
+## Validation
+The implementation was validated locally. The test suite correctly initialized the verifier, orchestrated the LLM calls via Ollama, and explicitly passed all three behavioral assertions in approximately 3-4 seconds.
 
 ## Next Steps
 - Commit these two new files.
