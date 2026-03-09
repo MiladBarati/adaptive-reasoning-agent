@@ -222,7 +222,8 @@ def clear_vector_store() -> str:
 
 # Create Gradio interface
 with gr.Blocks(title="Corrective & Adaptive RAG Agent", theme=gr.themes.Soft()) as demo:
-    gr.Markdown("""
+    gr.Markdown(
+        """
     # 🤖 Corrective & Adaptive RAG Agent
 
     An advanced Retrieval-Augmented Generation system with adaptive corrective mechanisms:
@@ -231,7 +232,8 @@ with gr.Blocks(title="Corrective & Adaptive RAG Agent", theme=gr.themes.Soft()) 
     - **Hallucination Checking**: Verifies answer accuracy
     - **Answer Verification**: Ensures quality responses
     - **Iterative Refinement**: Loops back when needed
-    """)
+    """
+    )
 
     with gr.Tabs():
         # Query Tab
@@ -360,7 +362,8 @@ with gr.Blocks(title="Corrective & Adaptive RAG Agent", theme=gr.themes.Soft()) 
             # Load stats on tab load
             demo.load(fn=get_vector_store_stats, outputs=stats_output)
 
-    gr.Markdown("""
+    gr.Markdown(
+        """
     ---
     ### 📖 How to Use
 
@@ -376,7 +379,8 @@ with gr.Blocks(title="Corrective & Adaptive RAG Agent", theme=gr.themes.Soft()) 
     - Check for hallucinations
     - Verify answer quality
     - Iterate until a good answer is found (up to max iterations)
-    """)
+    """
+    )
 
 
 def launch_gradio_app(
