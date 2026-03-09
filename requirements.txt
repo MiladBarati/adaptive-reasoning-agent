@@ -1,7 +1,7 @@
 langchain>=1.0.0,<2.0.0
 langgraph>=0.2.28
 langchain-groq>=1.0.0
-langchain-community>=1.0.0a1,<2.0.0
+langchain-community>=0.3.0,<2.0.0
 langchain-huggingface>=0.1.0
 langchain-chroma>=1.0.0
 langchain-text-splitters>=0.3.0
